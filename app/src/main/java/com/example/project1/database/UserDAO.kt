@@ -22,4 +22,21 @@ interface UserDAO {
     //gets the users ID
     @Query("SELECT * FROM users WHERE id = :userId LIMIT 1")
     suspend fun getUserById(userId: Int): UserEntity?
+
+    /* added extra queries for testing
+     */
+
+    // Get all users
+    @Query("SELECT * FROM users ORDER BY username")
+    suspend fun getAllUsers(): List<UserEntity>
+
+
+    // Delete all users
+    @Query("DELETE FROM users")
+    suspend fun deleteAllUsers()
+
+    // Count users
+    @Query("SELECT COUNT(*) FROM users")
+    suspend fun getUserCount(): Int
+
 }
