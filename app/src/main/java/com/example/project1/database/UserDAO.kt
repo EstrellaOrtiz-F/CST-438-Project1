@@ -1,4 +1,4 @@
-package com.example.project1.Database
+package com.example.project1.database
 
 import androidx.room.*
 
