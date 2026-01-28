@@ -11,6 +11,7 @@ import com.example.project1.ui.login.LoginScreen
 import com.example.project1.ui.login.LoginState
 import com.example.project1.ui.login.LoginViewModel
 
+
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
