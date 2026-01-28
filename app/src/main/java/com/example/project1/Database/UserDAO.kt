@@ -2,6 +2,12 @@ package com.example.project1.Database
 
 import androidx.room.*
 
+/**
+ * @author Estrella Ortiz
+ * <br>COURSE: CST- 438
+ * <br>DATE: 01/28/2026
+ * <br>ASSIGNMENT: Project 01
+ */
 @Dao
 interface UserDAO {
 
