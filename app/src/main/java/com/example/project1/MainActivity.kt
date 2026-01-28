@@ -1,51 +1,57 @@
-package com.example.project1
-
 import android.os.Bundle
-import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.activity.viewModels
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.example.project1.database.AppDatabase
 import com.example.project1.ui.login.LoginScreen
-import com.example.project1.ui.theme.Project1Theme
+import com.example.project1.ui.login.LoginState
+import com.example.project1.ui.login.LoginViewModel
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            Project1Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+
+        val userDao = AppDatabase.getDatabase(applicationContext).userDao()
+
+        val factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
+                    return LoginViewModel(userDao) as T
                 }
+                throw IllegalArgumentException("Unknown ViewModel class")
             }
         }
-    }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+        val loginViewModel: LoginViewModel by viewModels { factory }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Project1Theme {
-        LoginScreen { username, password ->
-            Log.d("Login", "User=$username Pass=$password")
+        setContent {
+            val state = loginViewModel.loginState
+
+            LoginScreen { username, password ->
+                loginViewModel.login(username, password)
+            }
+
+            LaunchedEffect(state) {
+                when (state) {
+                    is LoginState.Success -> {
+                        Toast.makeText(this@MainActivity, "Login successful!", Toast.LENGTH_SHORT).show()
+                        loginViewModel.reset()
+
+                        // TODO: Navigate to your next screen here (card list)
+                    }
+                    is LoginState.Error -> {
+                        Toast.makeText(this@MainActivity, state.message, Toast.LENGTH_SHORT).show()
+                        loginViewModel.reset()
+                    }
+                    else -> Unit
+                }
+            }
         }
     }
 }
