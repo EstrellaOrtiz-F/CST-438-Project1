@@ -1,6 +1,5 @@
 package com.example.project1
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +29,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun SignUpScreen(){
+    
     var password by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
 
@@ -52,6 +52,30 @@ fun SignUpScreen(){
         // Space between create account and username
         Spacer(modifier = Modifier.height(80.dp))
 
+        // Username
+        OutlinedTextField(
+            value = username,
+            onValueChange = { username = it },
+            placeholder = {
+                Text("Username", color = Color.Black)
+            },
+            textStyle = TextStyle(
+                color = Color.Black,
+                fontSize = 25.sp,
+            ),
+            modifier = Modifier
+                .width(300.dp)
+                .height(80.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedBorderColor = Color.Black,
+                focusedBorderColor = Color.Black
+            )
+        )
+
+
+        //space between username and password
+        Spacer(modifier = Modifier.height(40.dp))
+
         // Password
         OutlinedTextField(
             value = password,
@@ -73,35 +97,14 @@ fun SignUpScreen(){
             )
         )
 
-        //space between username and password
-        Spacer(modifier = Modifier.height(40.dp))
-
-        // Username
-        OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
-            placeholder = {
-                Text("Username", color = Color.Black)
-            },
-            textStyle = TextStyle(
-                color = Color.Black,
-                fontSize = 25.sp,
-            ),
-            modifier = Modifier
-                .width(300.dp)
-                .height(80.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = Color.Black,
-                focusedBorderColor = Color.Black
-            )
-        )
-
         //space between password and button
         Spacer(modifier = Modifier.height(80.dp))
 
         // Button
         Button(
-            onClick = { signUp(username,password) },
+            // When button is pressed, onClick will call the SignUpViewModel
+            // to validate the credentials (SignUpViewModel yet to be implemented).
+            onClick = { },
             modifier = Modifier
                 .width(300.dp)
                 .height(80.dp),
@@ -128,8 +131,4 @@ fun SignUpScreen(){
 
         )
     }
-}
-
-fun signUp(username: String, password: String){
-
 }
