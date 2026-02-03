@@ -20,13 +20,13 @@ data class CardDto(
 
 data class CardImageDto(
     @Json(name = "image_url")
-    val image_url: String?
+    val imageUrl: String?
 )
 
 data class CardPriceDto(
     @Json(name = "tcgplayer_price")
-    val tcgplayer_price: String?,
+    val tcgplayerPrice: String?,
 
     @Json(name = "cardmarket_price")
-    val cardmarket_price: String?
+    val cardmarketPrice: String?
 )
