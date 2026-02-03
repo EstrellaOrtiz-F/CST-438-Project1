@@ -13,5 +13,7 @@ interface YgoApi {
     @GET("cardinfo.php")
     suspend fun searchCards(
         @Query("fname") name: String,
-
+        @Query("num") num: Int = 20,
+        @Query("offset") offset: Int = 0
+    ): CardInfoResponse
 }
