@@ -146,14 +146,18 @@ fun SignUpScreen() {
             )
         }
 
-        Spacer(modifier = Modifier.height(240.dp))
+        Spacer(modifier = Modifier.height(35.dp))
 
         if (uiState.message.isNotEmpty()) {
             Text(
                 text = uiState.message,
-                color = MaterialTheme.colorScheme.error
+                style = TextStyle(fontSize = 14.sp),
+                color = MaterialTheme.colorScheme.error,
+
             )
         }
+
+        Spacer(modifier = Modifier.height(200.dp))
 
         // Already have an account screen
         Text(

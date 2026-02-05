@@ -54,7 +54,8 @@ class SignUpViewModel(
                 _uiState.update { currentState ->
                     currentState.copy()
                 }
-            } else if (!username.replace("\\s".toRegex(), "").isEmpty()) {
+            } else if (!username.replace("\\s".toRegex(), "").isEmpty()
+                && !password.replace("\\s".toRegex(), "").isEmpty()) {
                 //Creates a new user
                 val newUser = UserEntity(
                     username = username,
