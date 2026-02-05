@@ -1,6 +1,8 @@
 package com.example.project1.ui.profile
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.project1.database.UserCardEntity
@@ -8,7 +10,7 @@ import com.example.project1.database.UserEntity
 import com.example.project1.repository.ProfileRepository
 import kotlinx.coroutines.launch
 
-class ProfileViewModel (
+class ProfileViewModel(
     private val username: String,
     private val repo: ProfileRepository
 ) : ViewModel() {
@@ -22,9 +24,6 @@ class ProfileViewModel (
     var isLoading by mutableStateOf(false)
         private set
 
-    /**
-     * Loads user profile and card collection from Room.
-     */
     fun load() {
         if (isLoading) return
         isLoading = true
