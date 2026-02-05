@@ -1,16 +1,11 @@
 package com.example.project1
 
-import android.R.id.message
-import android.widget.Toast
-import androidx.compose.material3.Snackbar
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.project1.database.UserDAO
 import com.example.project1.database.UserEntity
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -43,6 +38,7 @@ class SignUpViewModel(
             //Get user by username
             val user = userDao.getUserByUsername(username)
 
+            // Messages for username and password scenarios
             if (username.isEmpty() && password.isEmpty()) {
                 _uiState.update {
                     it.copy(message = "Username & Password cannot be empty")
@@ -64,7 +60,7 @@ class SignUpViewModel(
                 }
             } else if (!username.replace("\\s".toRegex(), "").isEmpty()
                 && !password.replace("\\s".toRegex(), "").isEmpty()) {
-                //Creates a new user
+                //Creates a new user if as password & user is not empty
                 val newUser = UserEntity(
                     username = username,
                     password = password
