@@ -43,9 +43,17 @@ class SignUpViewModel(
             //Get user by username
             val user = userDao.getUserByUsername(username)
 
-            if (username.isEmpty()) {
+            if (username.isEmpty() && password.isEmpty()) {
+                _uiState.update {
+                    it.copy(message = "Username & Password cannot be empty")
+                }
+            } else if(username.isEmpty() && !password.isEmpty()){
                 _uiState.update {
                     it.copy(message = "Username cannot be empty")
+                }
+            } else if(!username.isEmpty() && password.isEmpty()){
+                _uiState.update {
+                    it.copy(message = "Password cannot be empty")
                 }
             }
 
