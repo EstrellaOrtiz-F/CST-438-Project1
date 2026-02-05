@@ -6,15 +6,20 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 /**
- * @author Estrella Ortiz
- * <br>COURSE: CST- 438
- * <br>DATE: 01/28/2026
- * <br>ASSIGNMENT: Project 01
+ * App database
+ * Stores users and their saved card collection.
  */
-@Database(entities = [UserEntity::class], version = 1)
+@Database(
+    entities = [UserEntity::class, UserCardEntity::class],
+    version = 2
+)
 abstract class AppDatabase : RoomDatabase() {
 
+    // Existing DAO
     abstract fun userDao(): UserDAO
+
+    // New DAO for user collection
+    abstract fun userCardDao(): UserCardDao
 
     companion object {
         private var INSTANCE: AppDatabase? = null
@@ -25,10 +30,11 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "app_db"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
             }
             return INSTANCE!!
         }
     }
-
 }
