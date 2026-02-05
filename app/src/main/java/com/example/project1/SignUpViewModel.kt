@@ -38,16 +38,20 @@ class SignUpViewModel(
             //Get user by username
             val user = userDao.getUserByUsername(username)
 
+            // Holds value that checks if user or password is empty
+            val userIsEmpty = username.replace("\\s".toRegex(), "").isEmpty()
+            val passIsEmpty = password.replace("\\s".toRegex(), "").isEmpty()
+
             // Messages for username and password scenarios
-            if (username.isEmpty() && password.isEmpty()) {
+            if (userIsEmpty && passIsEmpty) {
                 _uiState.update {
                     it.copy(message = "Username & Password cannot be empty")
                 }
-            } else if(username.isEmpty() && !password.isEmpty()){
+            } else if(userIsEmpty && !passIsEmpty){
                 _uiState.update {
                     it.copy(message = "Username cannot be empty")
                 }
-            } else if(!username.isEmpty() && password.isEmpty()){
+            } else if(!userIsEmpty && passIsEmpty){
                 _uiState.update {
                     it.copy(message = "Password cannot be empty")
                 }
@@ -58,8 +62,7 @@ class SignUpViewModel(
                 _uiState.update {
                     it.copy(message = "Username already exists")
                 }
-            } else if (!username.replace("\\s".toRegex(), "").isEmpty()
-                && !password.replace("\\s".toRegex(), "").isEmpty()) {
+            } else if (!userIsEmpty && !passIsEmpty) {
                 //Creates a new user if as password & user is not empty
                 val newUser = UserEntity(
                     username = username,
