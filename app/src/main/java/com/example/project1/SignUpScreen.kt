@@ -1,6 +1,5 @@
 package com.example.project1
 
-import androidx.annotation.ContentView
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,10 +8,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,20 +30,36 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.project1.database.AppDatabase
-import com.example.project1.database.UserDAO
+
+/**
+ * TITLE: SignUpScreen.kt
+ * @author Jesus Alfaro-Suarez
+ * COURSE: CST- 438
+ * DATE: 02/02/2026
+ * ASSIGNMENT: Project 01
+ * PURPOSE: Creates a screen for the sign up page.
+ * Allows users to enter a username and password that is valid.
+ */
 
 @Composable
-fun SignUpScreen(){
+fun SignUpScreen() {
 
+    // Gets userDAO
     val context = LocalContext.current
     val userDao = AppDatabase
         .getDatabase(context.applicationContext)
         .userDao()
 
-    val viewModel = SignUpViewModel(userDao)
+    // Creates SignUpViewModel and passes userDao through it.
+    val viewModel = remember { SignUpViewModel(userDao) }
 
     var password by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
+
+    val uiState by viewModel.uiState.collectAsState()
+
+
+
 
     Column(
         modifier = Modifier
@@ -119,7 +136,7 @@ fun SignUpScreen(){
             modifier = Modifier
                 .width(300.dp)
                 .height(80.dp),
-            colors = ButtonDefaults.buttonColors()
+            colors = ButtonDefaults.buttonColors(),
         ) {
             Text(
                 text = "Create Account",
@@ -131,6 +148,13 @@ fun SignUpScreen(){
 
         Spacer(modifier = Modifier.height(240.dp))
 
+        if (uiState.message.isNotEmpty()) {
+            Text(
+                text = uiState.message,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+
         // Already have an account screen
         Text(
             //modifier = Modifier.clickable(onClick = ), -- for later
@@ -138,8 +162,8 @@ fun SignUpScreen(){
             color = Color.Black,
             fontSize = 15.sp,
             fontStyle = FontStyle.Italic
-
-
         )
+
+
     }
 }
