@@ -55,8 +55,8 @@ class SignUpViewModel(
 
             // Checks if user exists in the database
             if (user != null) {
-                _uiState.update { currentState ->
-                    currentState.copy()
+                _uiState.update {
+                    it.copy(message = "Username already exists")
                 }
             } else if (!username.replace("\\s".toRegex(), "").isEmpty()
                 && !password.replace("\\s".toRegex(), "").isEmpty()) {
