@@ -6,7 +6,7 @@ import retrofit2.http.Query
 interface YgoApi {
     @GET("cardinfo.php")
     suspend fun getCards(
-        @Query("num") name: Int = 20,
+        @Query("num") num: Int = 20,
         @Query("offset") offset: Int = 0
     ): CardInfoResponse
 

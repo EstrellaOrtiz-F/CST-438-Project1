@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
-interface UserCardDao {
+@Dao interface UserCardDao {
 //Allows for access the users card collection via DAO
     //gets cards from a specific user
     @Query("SELECT * FROM user_cards WHERE username = :username")
