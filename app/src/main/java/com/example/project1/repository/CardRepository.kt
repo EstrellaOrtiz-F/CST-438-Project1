@@ -11,4 +11,7 @@ class CardRepository {
 
     suspend fun searchCards(name: String, num: Int, offset: Int): List<CardDto> =
         api.searchCards(name = name, num = num, offset = offset).data
+
+    suspend fun searchByFuzzyName(query: String, num: Int, offset: Int): List<CardDto> =
+        searchCards(name = query, num = num, offset = offset)
 }

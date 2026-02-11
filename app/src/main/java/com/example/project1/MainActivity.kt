@@ -1,3 +1,5 @@
+package com.example.project1
+
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -10,7 +12,6 @@ import com.example.project1.database.AppDatabase
 import com.example.project1.ui.login.LoginScreen
 import com.example.project1.ui.login.LoginState
 import com.example.project1.ui.login.LoginViewModel
-
 
 class MainActivity : ComponentActivity() {
 
