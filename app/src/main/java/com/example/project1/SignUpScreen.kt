@@ -1,5 +1,8 @@
 package com.example.project1
 
+import android.app.Activity
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -161,13 +164,14 @@ fun SignUpScreen() {
 
         // Already have an account screen
         Text(
-            //modifier = Modifier.clickable(onClick = ), -- for later
             text = "Already have an account? Login",
             color = Color.Black,
             fontSize = 15.sp,
-            fontStyle = FontStyle.Italic
+            fontStyle = FontStyle.Italic,
+            modifier = Modifier.clickable {
+                // Close SignUpActivity and return to LoginActivity
+                (context as? Activity)?.finish()
+            }
         )
-
-
     }
 }
