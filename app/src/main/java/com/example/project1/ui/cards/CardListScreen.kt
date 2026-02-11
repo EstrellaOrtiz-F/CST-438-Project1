@@ -18,6 +18,20 @@ fun CardListScreen(
 ) {
     LaunchedEffect(Unit) { vm.loadFirstPage() }
 
+// If there's an error, show it as a modal popup so it can't be covered
+    vm.errorMessage?.let { msg ->
+        AlertDialog(
+            onDismissRequest = { /* keep it until next load or add clearError() */ },
+            confirmButton = {
+                TextButton(onClick = { /* same */ }) {
+                    Text("OK")
+                }
+            },
+            title = { Text("Error loading cards") },
+            text = { Text(msg) }
+        )
+    }
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(12.dp),

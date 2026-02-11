@@ -1,5 +1,10 @@
 package com.example.project1
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import com.example.project1.ui.cards.CardListScreen
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -22,15 +27,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val userDao = AppDatabase.getDatabase(applicationContext).userDao()
-        lifecycleScope.launch {
-            userDao.insert(
-                UserEntity(
-                    username = "test",
-                    password = "1234"
-                )
-            )
-        }
-
 
         val factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -47,17 +43,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             val state = loginViewModel.loginState
 
-            LoginScreen { username, password ->
-                loginViewModel.login(username, password)
-            }
+            // Controls which screen is visible
+            var isLoggedIn by remember { mutableStateOf(false) }
 
+            // React to login state changes
             LaunchedEffect(state) {
                 when (state) {
                     is LoginState.Success -> {
                         Toast.makeText(this@MainActivity, "Login successful!", Toast.LENGTH_SHORT).show()
+                        isLoggedIn = true
                         loginViewModel.reset()
-
-                        // TODO: Navigate to your next screen here (card list)
                     }
                     is LoginState.Error -> {
                         Toast.makeText(this@MainActivity, state.message, Toast.LENGTH_SHORT).show()
@@ -65,6 +60,14 @@ class MainActivity : ComponentActivity() {
                     }
                     else -> Unit
                 }
+            }
+            // Show either Login or Card List
+            if (!isLoggedIn) {
+                LoginScreen { username, password ->
+                    loginViewModel.login(username, password)
+                }
+            } else {
+                CardListScreen()
             }
         }
     }
