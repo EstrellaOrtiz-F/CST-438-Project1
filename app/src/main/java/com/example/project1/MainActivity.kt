@@ -1,5 +1,10 @@
 package com.example.project1
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import com.example.project1.ui.cards.CardListScreen
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -8,11 +13,13 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.project1.database.AppDatabase
+import com.example.project1.database.UserEntity
 import com.example.project1.ui.login.LoginScreen
 import com.example.project1.ui.login.LoginState
 import com.example.project1.ui.login.LoginViewModel
-
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -36,17 +43,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             val state = loginViewModel.loginState
 
-            LoginScreen { username, password ->
-                loginViewModel.login(username, password)
-            }
+            // Controls which screen is visible
+            var isLoggedIn by remember { mutableStateOf(false) }
 
+            // React to login state changes
             LaunchedEffect(state) {
                 when (state) {
                     is LoginState.Success -> {
                         Toast.makeText(this@MainActivity, "Login successful!", Toast.LENGTH_SHORT).show()
+                        isLoggedIn = true
                         loginViewModel.reset()
-
-                        // TODO: Navigate to your next screen here (card list)
                     }
                     is LoginState.Error -> {
                         Toast.makeText(this@MainActivity, state.message, Toast.LENGTH_SHORT).show()
@@ -54,6 +60,14 @@ class MainActivity : ComponentActivity() {
                     }
                     else -> Unit
                 }
+            }
+            // Show either Login or Card List
+            if (!isLoggedIn) {
+                LoginScreen { username, password ->
+                    loginViewModel.login(username, password)
+                }
+            } else {
+                CardListScreen()
             }
         }
     }
