@@ -6,6 +6,9 @@ import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import android.content.Intent
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.platform.LocalContext
 @Composable
 fun LoginScreen(
     onLoginClick: (String, String) -> Unit
@@ -13,6 +16,7 @@ fun LoginScreen(
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -50,6 +54,19 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Login")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextButton(
+            onClick = {
+                context.startActivity(
+                    Intent(context, com.example.project1.SignUpActivity::class.java)
+                )
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Don't have an account? Sign Up")
         }
     }
 }

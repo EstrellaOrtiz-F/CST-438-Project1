@@ -8,10 +8,13 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.project1.database.AppDatabase
+import com.example.project1.database.UserEntity
 import com.example.project1.ui.login.LoginScreen
 import com.example.project1.ui.login.LoginState
 import com.example.project1.ui.login.LoginViewModel
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -19,6 +22,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val userDao = AppDatabase.getDatabase(applicationContext).userDao()
+        lifecycleScope.launch {
+            userDao.insert(
+                UserEntity(
+                    username = "test",
+                    password = "1234"
+                )
+            )
+        }
+
 
         val factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
