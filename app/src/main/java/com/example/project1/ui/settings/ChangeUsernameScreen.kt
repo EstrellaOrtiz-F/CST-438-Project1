@@ -1,6 +1,5 @@
 package com.example.project1.ui.settings
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,8 +8,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -22,39 +22,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.project1.SignUpViewModel
 import com.example.project1.database.AppDatabase
 
-/**
- * TITLE: SettingsScreen.kt
- * @author Jesus Alfaro-Suarez
- * COURSE: CST- 438
- * DATE: 02/02/2026
- * ASSIGNMENT: Project 01
- * PURPOSE: Creates a screen for the sign up page.
- * Allows users to enter a username and password that is valid.
- */
-
 @Composable
-fun SettingsScreen() {
-
-    var showUsername by remember { mutableStateOf(false) }
-    var showPassword by remember { mutableStateOf(false) }
-
-
-    if (showUsername) {
-        ChangeUsernameScreen() // or SignUpScreen(onBack = { showSignUp = false })
-        return
-    }
-
-    if (showPassword) {
-        ChangePasswordScreen() // or SignUpScreen(onBack = { showSignUp = false })
-        return
-    }
+fun ChangeUsernameScreen() {
 
     // Gets userDAO
     val context = LocalContext.current
@@ -70,6 +48,7 @@ fun SettingsScreen() {
 
     val uiState by viewModel.uiState.collectAsState()
 
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -77,53 +56,84 @@ fun SettingsScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        // Title
+        // Back text Button
         Text(
-            text = "Settings",
+            text = "Back",
             color = Color.Black,
-            fontSize = 40.sp,
-            style = MaterialTheme.typography.headlineMedium,
+            fontSize = 25.sp,
             fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-
-
-            )
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(horizontal = 25.dp),
+        )
 
         // Space between create account and username
         Spacer(modifier = Modifier.height(40.dp))
-        HorizontalDivider(thickness = 2.dp, color = Color.LightGray)
-        Spacer(modifier = Modifier.height(20.dp))
 
+        // Title
         Text(
-            modifier = Modifier.clickable(onClick = { showUsername = true }),
             text = "Change Username",
             color = Color.Black,
-            fontSize = 20.sp,
+            fontSize = 40.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
 
         // Space between create account and username
-        Spacer(modifier = Modifier.height(20.dp))
-        HorizontalDivider(thickness = 2.dp, color = Color.LightGray)
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Text(
-            modifier = Modifier.clickable(onClick = { showPassword = true }),
-            text = "Change Password",
-            color = Color.Black,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-        HorizontalDivider(thickness = 2.dp, color = Color.LightGray)
         Spacer(modifier = Modifier.height(80.dp))
 
+        // Username
+        OutlinedTextField(
+            value = username,
+            onValueChange = { username = it },
+            placeholder = {
+                Text("Username", color = Color.Black)
+            },
+            textStyle = TextStyle(
+                color = Color.Black,
+                fontSize = 25.sp,
+            ),
+            modifier = Modifier
+                .width(300.dp)
+                .height(80.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedBorderColor = Color.Black,
+                focusedBorderColor = Color.Black
+            )
+        )
+
+
+        //space between username and password
+        Spacer(modifier = Modifier.height(40.dp))
+
+        // new Username
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            placeholder = {
+                Text("New Username", color = Color.Black)
+            },
+            visualTransformation = PasswordVisualTransformation(),
+            textStyle = TextStyle(
+                color = Color.Black,
+                fontSize = 25.sp
+            ),
+            modifier = Modifier
+                .width(300.dp)
+                .height(80.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedBorderColor = Color.Black,
+                focusedBorderColor = Color.Black
+            )
+        )
+
+        //space between password and button
+        Spacer(modifier = Modifier.height(80.dp))
+
+        // Button
         Button(
-            // When button is pressed, onClick will call the SignUpViewModel
-            // to validate the credentials (SignUpViewModel yet to be implemented).
+            // TODO: When button is pressed, onClick will call the changeUsernameViewModel
+            // NOT IMPLEMENTED YET
             onClick = { viewModel.create(username, password) },
             modifier = Modifier
                 .width(300.dp)
@@ -131,11 +141,24 @@ fun SettingsScreen() {
             colors = ButtonDefaults.buttonColors(),
         ) {
             Text(
-                text = "Logout",
+                text = "Change Username",
                 color = Color.White,
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold
             )
         }
+
+        Spacer(modifier = Modifier.height(35.dp))
+
+        // Might not use this, depends on ViewModel implementation
+        if (uiState.message.isNotEmpty()) {
+            Text(
+                text = uiState.message,
+                style = TextStyle(fontSize = 14.sp),
+                color = MaterialTheme.colorScheme.error,
+
+                )
+        }
+
     }
 }
