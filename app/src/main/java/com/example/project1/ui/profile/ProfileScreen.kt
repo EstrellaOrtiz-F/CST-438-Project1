@@ -1,5 +1,4 @@
 package com.example.project1.ui.profile
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,6 +35,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.project1.database.UserCardEntity
+/**
+ * @author Estrella Ortiz
+ * <br>COURSE: CST- 438
+ * <br>DATE: 01/28/2026
+ * Project 1:ProfileScreen
+ * <br>ASSIGNMENT: Project 01
+ */
 
 @Composable
 fun ProfileScreen(
