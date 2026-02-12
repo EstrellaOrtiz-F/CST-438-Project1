@@ -64,7 +64,7 @@ fun ChangePasswordScreen() {
             color = Color.Black,
             fontSize = 25.sp,
             fontWeight = FontWeight.Bold,
-            // Will add back button functionality later
+            //TODO: add back button functionality, closes activity goes back to SettingsScreen
             modifier = Modifier
                 .align(Alignment.Start)
                 .padding(horizontal = 25.dp)
