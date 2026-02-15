@@ -17,6 +17,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
+//the loading screen
+//what users see after loging in
+//they can nagivage to their profile,the cardlist view or the settings
 fun LandingScreen(
     username: String,
     onOpenProfile: () -> Unit,
@@ -37,7 +40,7 @@ fun LandingScreen(
         )
 
         Spacer(Modifier.height(28.dp))
-
+  //displays profile
         Button(
             onClick = onOpenProfile,
             modifier = Modifier.fillMaxWidth().height(56.dp)
@@ -46,7 +49,7 @@ fun LandingScreen(
         }
 
         Spacer(Modifier.height(12.dp))
-
+  //cards button
         Button(
             onClick = onOpenCards,
             modifier = Modifier.fillMaxWidth().height(56.dp)
@@ -56,6 +59,9 @@ fun LandingScreen(
 
         Spacer(Modifier.height(12.dp))
 
+        //displays the settings
+        //I linked the landing page to the settings
+        //I didn't touch the settings much and the functions of the features still need to be implemented
         Button(
             onClick = onOpenSettings,
             modifier = Modifier.fillMaxWidth().height(56.dp)
