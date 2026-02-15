@@ -48,7 +48,7 @@ class CardViewModel(
                 cards = cards + next
                 offset += pageSize
             } catch (e: Exception) {
-                // Prevent crash: capture the error so UI can display it
+                // captures the error and is displayed
                 errorMessage = "Failed to load cards: ${e.message ?: "unknown error"}"
             } finally {
                 isLoading = false
@@ -64,7 +64,6 @@ class CardViewModel(
 
         viewModelScope.launch {
             try {
-                // Using repository search function (fuzzy search)
                 cards = repo.searchCards(name = query, num = pageSize, offset = offset)
                 offset += pageSize
             } catch (e: Exception) {
