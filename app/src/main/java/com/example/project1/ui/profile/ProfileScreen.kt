@@ -1,4 +1,5 @@
 package com.example.project1.ui.profile
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,14 +16,20 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,21 +42,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.project1.database.UserCardEntity
+
 /**
  * @author Estrella Ortiz
- * <br>COURSE: CST- 438
- * <br>DATE: 01/28/2026
- * Project 1:ProfileScreen
- * <br>ASSIGNMENT: Project 01
+ * Project:1
+ * Abstract: Displays the users information like username
+ * The user can also view their wishlist and card collection from their profile
  */
+
+private enum class ListTab { COLLECTION, WISHLIST }
 
 @Composable
 fun ProfileScreen(
     vm: ProfileViewModel,
-    //  for later when wishlist is implemented, MainActivity can pass navigation here
     onOpenWishlist: () -> Unit = {}
 ) {
     LaunchedEffect(Unit) { vm.load() }
+
+    // which tab is currently selected
+    var selectedTab by remember { mutableStateOf(ListTab.COLLECTION) }
 
     val bg = Brush.verticalGradient(
         colors = listOf(
@@ -82,12 +93,14 @@ fun ProfileScreen(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // Header
             Text(
                 text = "Profile",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
 
+            // Profile card with avatar and stats
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
@@ -101,19 +114,20 @@ fun ProfileScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
-                        Box(
+                        Surface(
                             modifier = Modifier
                                 .size(64.dp)
-                                .clip(RoundedCornerShape(20.dp))
-                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
-                            contentAlignment = Alignment.Center
+                                .clip(RoundedCornerShape(20.dp)),
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
                         ) {
-                            Text(
-                                text = vm.user?.username?.firstOrNull()?.uppercase() ?: "U",
-                                fontSize = 28.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
+                            Box(contentAlignment = Alignment.Center) {
+                                Text(
+                                    text = vm.user?.username?.firstOrNull()?.uppercase() ?: "U",
+                                    fontSize = 28.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         }
 
                         Column(modifier = Modifier.weight(1f)) {
@@ -135,45 +149,75 @@ fun ProfileScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        StatChip(label = "Cards", value = vm.cards.size.toString())
-                        StatChip(label = "Wishlist", value = "0") // placeholder until implemented
+                        StatChip(label = "Cards", value = vm.collection.size.toString())
+                        StatChip(label = "Wishlist", value = vm.wishlist.size.toString())
                     }
 
-                    // Buttons row ,Wishlist button included for later addition
+                    // Buttons row: toggles for Collection/Wishlist
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        // could be "View Collection" later (currently does nothing)
-                        Button(
-                            onClick = { /* add collection navigation later if you want */ },
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text("Collection")
+                        // Collection button - filled when selected
+                        val collectionColors = if (selectedTab == ListTab.COLLECTION) {
+                            ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                        } else {
+                            ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface)
                         }
 
-                        // placeholder for the wishlist when implemented
-                        // Set enabled = true when wishlist is implemented and you wire onOpenWishlist()
-                        OutlinedButton(
-                            onClick = onOpenWishlist,
-                            enabled = false,
-                            modifier = Modifier.weight(1f)
+                        Button(
+                            onClick = { selectedTab = ListTab.COLLECTION },
+                            modifier = Modifier.weight(1f),
+                            colors = collectionColors
                         ) {
-                            Text("Wishlist")
+                            Text(
+                                text = "Collection",
+                                color = if (selectedTab == ListTab.COLLECTION) Color.White else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+
+                        // Wishlist button - outlined/outlined look when not selected, filled when selected
+                        val wishlistSelected = selectedTab == ListTab.WISHLIST
+                        val wishlistColors = if (wishlistSelected) {
+                            ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
+                        } else {
+                            ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                        }
+
+                        OutlinedButton(
+                            onClick = { selectedTab = ListTab.WISHLIST },
+                            modifier = Modifier.weight(1f),
+                            colors = wishlistColors,
+                            shape = RoundedCornerShape(50)
+                        ) {
+                            Text(
+                                text = "Wishlist",
+                                color = if (wishlistSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     }
                 }
             }
 
+            // Title above grid reflects selected tab
             Text(
-                text = "Card Collection",
+                text = when (selectedTab) {
+                    ListTab.COLLECTION -> "Card Collection"
+                    ListTab.WISHLIST -> "Wishlist"
+                },
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
 
-            if (vm.cards.isEmpty()) {
+            // Data source for the grid depends on selected tab
+            val displayed = when (selectedTab) {
+                ListTab.COLLECTION -> vm.collection
+                ListTab.WISHLIST -> vm.wishlist
+            }
+
+            if (displayed.isEmpty()) {
                 Text(
-                    text = "No cards saved yet.",
+                    text = if (selectedTab == ListTab.COLLECTION) "No cards saved yet." else "No wishlist items.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f)
                 )
@@ -182,11 +226,55 @@ fun ProfileScreen(
                     columns = GridCells.Fixed(2),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    items(vm.cards) { card ->
+                    items(displayed) { card: UserCardEntity ->
                         NiceCardItem(card)
                     }
+                }
+            }
+
+
+            Text(
+                text = "Decks",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            if (vm.decks.isEmpty()) {
+                Text(
+                    text = "No decks created.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f)
+                )
+            } else {
+                vm.decks.forEach { (deckName, cards) ->
+                    Text(
+                        text = deckName,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    if (cards.isEmpty()) {
+                        Text(
+                            text = "No cards in this deck.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f)
+                        )
+                    } else {
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            items(cards) { card: UserCardEntity ->
+                                NiceCardItem(card)
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         }
@@ -251,5 +339,4 @@ private fun NiceCardItem(card: UserCardEntity) {
         }
     }
 }
-
 
