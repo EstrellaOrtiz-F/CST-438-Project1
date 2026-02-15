@@ -1,13 +1,11 @@
 package com.example.project1.ui.profile
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.project1.database.UserCardEntity
-import com.example.project1.database.UserEntity
+import com.example.project1.database.*
 import com.example.project1.repository.ProfileRepository
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
@@ -18,23 +16,51 @@ class ProfileViewModel(
     var user by mutableStateOf<UserEntity?>(null)
         private set
 
-    var cards by mutableStateOf<List<UserCardEntity>>(emptyList())
+    var collection by mutableStateOf<List<UserCardEntity>>(emptyList())
+        private set
+
+    var wishlist by mutableStateOf<List<UserCardEntity>>(emptyList())
+        private set
+
+    var decks by mutableStateOf<Map<String, List<UserCardEntity>>>(emptyMap())
         private set
 
     var isLoading by mutableStateOf(false)
         private set
 
+    private var didLoad = false
+
     fun load() {
-        if (isLoading) return
+        if (isLoading || didLoad) return
         isLoading = true
 
         viewModelScope.launch {
             try {
-                user = repo.getUser(username)
-                cards = repo.getUserCards(username)
+                val userJob = async { repo.getUser(username) }
+                val collectionJob = async { repo.getUserCards(username) }
+                val wishlistJob = async { repo.getWishlist(username) }
+                val deckNamesJob = async { repo.getDeckNames(username) }
+
+                user = userJob.await()
+                collection = collectionJob.await().distinctBy { it.cardId }
+                wishlist = wishlistJob.await()
+
+                val deckMap = mutableMapOf<String, List<UserCardEntity>>()
+                for (name in deckNamesJob.await()) {
+                    deckMap[name] = repo.getDeck(username, name)
+                }
+                decks = deckMap
+
+                didLoad = true
             } finally {
                 isLoading = false
             }
         }
+    }
+
+    // Added so Profile updates immediately after DB changes
+    fun refresh() {
+        didLoad = false
+        load()
     }
 }
