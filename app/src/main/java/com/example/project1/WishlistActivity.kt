@@ -1,44 +1,61 @@
 package com.example.project1
 
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
-
+import com.example.project1.database.AppDatabase
+import com.example.project1.database.UserCardEntity
+import kotlinx.coroutines.launch
 
 class WishlistActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var searchView: SearchView
+    private lateinit var adapter: WishlistAdapter
+    private lateinit var database: AppDatabase
+    private var allCards: List<UserCardEntity> = emptyList()
+    private var currentUsername: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_wishlist)
 
-        // Enable back button in action bar
+        currentUsername = intent.getStringExtra("USERNAME") ?: ""
+
+        if (currentUsername.isEmpty()) {
+            Toast.makeText(this, "Error: No user logged in", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
+        database = AppDatabase.getDatabase(this)
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "Wishlist"
 
-        // Setup RecyclerView
         recyclerView = findViewById(R.id.recyclerViewWishlist)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // Setup SearchView
         searchView = findViewById(R.id.searchViewWishlist)
         setupSearch()
 
-        // Load wishlist cards from database
+        loadWishlistCards()
+    }
+
+    override fun onResume() {
+        super.onResume()
         loadWishlistCards()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                // Navigate back to landing page
                 finish()
                 true
             }
@@ -53,7 +70,6 @@ class WishlistActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                // Filter the wishlist based on search text
                 filterWishlist(newText)
                 return true
             }
@@ -61,25 +77,49 @@ class WishlistActivity : AppCompatActivity() {
     }
 
     private fun loadWishlistCards() {
-        // TODO: Load wishlist cards from your database
-        // Example:
-        // val wishlistCards = database.getWishlistCards()
-        // val adapter = WishlistAdapter(wishlistCards) { card ->
-        //     // Handle card click - navigate to card details
-        //     openCardDetails(card)
-        // }
-        // recyclerView.adapter = adapter
+        lifecycleScope.launch {
+            try {
+                allCards = database.userCardDao().getCardsForUser(currentUsername)
+
+                adapter = WishlistAdapter(allCards) { card ->
+                    openCardDetails(card)
+                }
+                recyclerView.adapter = adapter
+
+                if (allCards.isEmpty()) {
+                    Toast.makeText(
+                        this@WishlistActivity,
+                        "Your wishlist is empty",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(
+                    this@WishlistActivity,
+                    "Error loading wishlist: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
     private fun filterWishlist(query: String?) {
-        // TODO: Filter wishlist based on search query
-        // Update the adapter with filtered results
+        if (!::adapter.isInitialized) return
+
+        val filteredCards = if (query.isNullOrBlank()) {
+            allCards
+        } else {
+            allCards.filter { card ->
+                card.cardName.contains(query, ignoreCase = true)
+            }
+        }
+
+        adapter.updateCards(filteredCards)
     }
 
-    private fun openCardDetails(cardId: String) {
-        // TODO: Navigate to card details activity
-        // val intent = Intent(this, CardDetailsActivity::class.java)
-        // intent.putExtra("CARD_ID", cardId)
-        // startActivity(intent)
+    private fun openCardDetails(card: UserCardEntity) {
+        val intent = Intent(this, CardDetailsActivity::class.java)
+        intent.putExtra("CARD_ID", card.cardId)
+        startActivity(intent)
     }
 }

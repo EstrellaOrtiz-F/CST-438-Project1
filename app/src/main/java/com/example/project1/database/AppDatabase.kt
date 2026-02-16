@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 /**
+ * @author Estrella Ortiz-Felix
  * App database
  * Stores users and their saved card collection.
  */
@@ -15,10 +16,10 @@ import androidx.room.RoomDatabase
 )
 abstract class AppDatabase : RoomDatabase() {
 
-    // Existing DAO
+    //  DAO
     abstract fun userDao(): UserDAO
 
-    // New DAO for user collection
+    // DAO for user collection
     abstract fun userCardDao(): UserCardDao
 
     companion object {

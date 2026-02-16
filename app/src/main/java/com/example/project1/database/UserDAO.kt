@@ -39,4 +39,9 @@ interface UserDAO {
     @Query("SELECT COUNT(*) FROM users")
     suspend fun getUserCount(): Int
 
+    /* For settings */
+
+    // Updates User
+    @Update
+    suspend fun updateUser(user : UserEntity)
 }
