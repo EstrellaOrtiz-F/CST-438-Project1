@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -13,6 +14,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -96,28 +98,40 @@ fun SettingsScreen() {
         HorizontalDivider(thickness = 2.dp, color = Color.LightGray)
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text(
-            modifier = Modifier.clickable(onClick = { showUsername = true }),
-            text = "Change Username",
-            color = Color.Black,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
+        TextButton(
+            onClick = { showUsername = true },
+            modifier = Modifier.fillMaxWidth()
+
+        ) {
+            Text(
+                text = "Change Username",
+                color = Color.Black,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+        }
+
 
         // Space between create account and username
         Spacer(modifier = Modifier.height(20.dp))
         HorizontalDivider(thickness = 2.dp, color = Color.LightGray)
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text(
-            modifier = Modifier.clickable(onClick = { showPassword = true }),
-            text = "Change Password",
-            color = Color.Black,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
+        TextButton(
+            onClick = { showPassword = true },
+            modifier = Modifier.fillMaxWidth()
+
+        ) {
+            Text(
+                text = "Change Password",
+                color = Color.Black,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+        }
+
 
         Spacer(modifier = Modifier.height(20.dp))
         HorizontalDivider(thickness = 2.dp, color = Color.LightGray)

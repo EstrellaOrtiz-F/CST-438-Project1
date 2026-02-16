@@ -17,6 +17,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +45,8 @@ fun ChangeUsernameScreen() {
 
     // Creates SignUpViewModel and passes userDao through it.
     val viewModel = remember { ChangeUserViewModel(userDao) }
+
+    val uiState by viewModel.uiState.collectAsState()
 
     var username by remember { mutableStateOf("") }
     var newUsername by remember { mutableStateOf("") }
@@ -179,6 +182,19 @@ fun ChangeUsernameScreen() {
                 fontWeight = FontWeight.Bold
             )
         }
+
+        Spacer(modifier = Modifier.height(25.dp))
+
+        // Message
+        if (uiState.message.isNotEmpty()) {
+            Text(
+                text = uiState.message,
+                style = TextStyle(fontSize = 14.sp),
+                color = MaterialTheme.colorScheme.error,
+
+                )
+        }
+
 
     }
 }

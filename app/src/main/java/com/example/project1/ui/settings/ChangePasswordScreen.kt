@@ -50,6 +50,8 @@ fun ChangePasswordScreen() {
     // Creates SignUpViewModel and passes userDao through it.
     val viewModel = remember { ChangePassViewModel(userDao) }
 
+    val uiState by viewModel.uiState.collectAsState()
+
     var username by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
     var currentPassword by remember { mutableStateOf("") }
@@ -128,14 +130,16 @@ fun ChangePasswordScreen() {
                         color = Color.Black,
                         fontSize = 25.sp
                     ),
+                    visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier
                         .width(300.dp)
                         .height(80.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedBorderColor = Color.Black,
                         focusedBorderColor = Color.Black
+                    ),
+
                     )
-                )
 
 
                 //space between new password and password
@@ -171,7 +175,7 @@ fun ChangePasswordScreen() {
 
         // Button
         Button(
-            onClick = { viewModel.changePassword(username,currentPassword, newPassword) },
+            onClick = { viewModel.changePassword(username, currentPassword, newPassword) },
             modifier = Modifier
                 .width(300.dp)
                 .height(80.dp),
@@ -183,6 +187,18 @@ fun ChangePasswordScreen() {
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold
             )
+        }
+
+        Spacer(modifier = Modifier.height(25.dp))
+
+        // Message
+        if (uiState.message.isNotEmpty()) {
+            Text(
+                text = uiState.message,
+                style = TextStyle(fontSize = 14.sp),
+                color = MaterialTheme.colorScheme.error,
+
+                )
         }
     }
 }
