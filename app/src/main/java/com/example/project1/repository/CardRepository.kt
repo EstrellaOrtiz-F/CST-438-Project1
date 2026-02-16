@@ -7,11 +7,14 @@ class CardRepository {
     private val api = NetworkModule.api
 
     suspend fun getCardsPage(num: Int, offset: Int): List<CardDto> =
-        api.getCards(num = num, offset = offset).data
+        api.getCards(num = num, offset = offset).data ?: emptyList()
 
     suspend fun searchCards(name: String, num: Int, offset: Int): List<CardDto> =
-        api.searchCards(name = name, num = num, offset = offset).data
+        api.searchCards(name = name, num = num, offset = offset).data ?: emptyList()
 
     suspend fun searchByFuzzyName(query: String, num: Int, offset: Int): List<CardDto> =
         searchCards(name = query, num = num, offset = offset)
+
+    suspend fun getCardById(id: Int): CardDto? =
+        api.getCardById(id = id).data?.firstOrNull()
 }

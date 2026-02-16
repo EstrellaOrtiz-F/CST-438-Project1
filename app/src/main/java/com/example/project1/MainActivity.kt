@@ -17,6 +17,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.project1.database.AppDatabase
 import com.example.project1.database.UserCardEntity
 import com.example.project1.ui.cards.CardListScreen
+import com.example.project1.ui.cards.CardDetailScreen
+import com.example.project1.ui.cards.UserCardDetailScreen
+import com.example.project1.network.CardDto
 import com.example.project1.ui.landing.LandingScreen
 import com.example.project1.ui.login.LoginScreen
 import com.example.project1.ui.login.LoginState
@@ -88,57 +91,104 @@ class MainActivity : ComponentActivity() {
                         onOpenSettings = { route = "settings" }
                     )
 
-                    "cards" -> Column {
-                        Button(onClick = { route = "landing" }) { Text("Back") }
+                    "cards" -> {
+                        // Holds the selected card. If null, we're on the list screen.
+                        var selectedCard by remember { mutableStateOf<CardDto?>(null) }
 
-                        CardListScreen(
-                            onCardClick = { },
-                            onAddToWishlist = { dto ->
-                                val entity = UserCardEntity(
-                                    username = currentUser!!,
-                                    cardId = dto.id ?: 0L,
-                                    cardName = dto.name,
-                                    imageUrl = dto.cardImages?.firstOrNull()?.imageUrl,
-                                    listType = "WISHLIST",
-                                    deckName = null
-                                )
-
-                                lifecycleScope.launch {
-                                    db.userCardDao().addCard(entity)
-                                    // refresh profile data
-                                    profileVm.refresh()
-                                    Toast.makeText(this@MainActivity, "Added to wishlist", Toast.LENGTH_SHORT).show()
-                                }
-                            },
-                            onAddToDeck = { dto ->
-                                // default deck name
-                                val entity = UserCardEntity(
-                                    username = currentUser!!,
-                                    cardId = dto.id ?: 0L,
-                                    cardName = dto.name,
-                                    imageUrl = dto.cardImages?.firstOrNull()?.imageUrl,
-                                    listType = "DECK",
-                                    deckName = "Main"
-                                )
-                                lifecycleScope.launch {
-                                    db.userCardDao().addCard(entity)
-                                    // make sure any changes made update
-                                    profileVm.refresh()
-                                    Toast.makeText(this@MainActivity, "Added to deck", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        )
-                    }
-                   //added this so that the landing page is seen after loging in
-                    "profile" -> {
                         Column {
-                            Button(onClick = { route = "landing" }) { Text("Back") }
-                            // view model loads
-                            LaunchedEffect(Unit) { profileVm.load()
+                            // Back button behavior:
+                            // - If you're in details, go back to list
+                            // - If you're in list, go back to landing
+                            Button(
+                                onClick = {
+                                    if (selectedCard != null) selectedCard = null else route = "landing"
+                                }
+                            ) { Text("Back") }
+
+                            if (selectedCard == null) {
+                                // Show the list
+                                CardListScreen(
+                                    onCardClick = { clicked ->
+                                        // When the user clicks a card, show details
+                                        selectedCard = clicked
+                                    },
+                                    onAddToWishlist = { dto ->
+                                        val entity = UserCardEntity(
+                                            username = currentUser!!,
+                                            cardId = dto.id,
+                                            cardName = dto.name,
+                                            imageUrl = dto.cardImages?.firstOrNull()?.imageUrl,
+                                            listType = "WISHLIST",
+                                            deckName = null
+                                        )
+
+                                        lifecycleScope.launch {
+                                            db.userCardDao().addCard(entity)
+                                            profileVm.refresh()
+                                            Toast.makeText(this@MainActivity, "Added to wishlist", Toast.LENGTH_SHORT).show()
+                                        }
+                                    },
+                                    onAddToDeck = { dto ->
+                                        val entity = UserCardEntity(
+                                            username = currentUser!!,
+                                            cardId = dto.id,
+                                            cardName = dto.name,
+                                            imageUrl = dto.cardImages?.firstOrNull()?.imageUrl,
+                                            listType = "DECK",
+                                            deckName = "Main"
+                                        )
+
+                                        lifecycleScope.launch {
+                                            db.userCardDao().addCard(entity)
+                                            profileVm.refresh()
+                                            Toast.makeText(this@MainActivity, "Added to deck", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                )
+                            } else {
+                                // Show details
+                                CardDetailScreen(
+                                    card = selectedCard!!,
+                                    onBack = { selectedCard = null }
+                                )
                             }
-                            ProfileScreen(vm = profileVm)
                         }
                     }
+
+                    //added this so that the landing page is seen after logging in
+                    "profile" -> {
+                        var selectedProfileCard by remember { mutableStateOf<UserCardEntity?>(null) }
+
+                        Column {
+                            Button(
+                                onClick = {
+                                    if (selectedProfileCard != null) selectedProfileCard = null else route = "landing"
+                                }
+                            ) { Text("Back") }
+
+                            LaunchedEffect(Unit) { profileVm.load() }
+
+                            if (selectedProfileCard == null) {
+                                ProfileScreen(
+                                    vm = profileVm,
+                                    onCardClick = { clicked ->
+                                        selectedProfileCard = clicked
+                                    },
+                                    onRemoveCard = { cardToRemove ->
+                                        profileVm.removeCard(cardToRemove)
+                                        Toast.makeText(this@MainActivity, "Removed", Toast.LENGTH_SHORT).show()
+                                    }
+                                )
+                            } else {
+                                // ✅ Reuses the SAME CardDetailScreen via API lookup by id
+                                UserCardDetailScreen(
+                                    savedCard = selectedProfileCard!!,
+                                    onBack = { selectedProfileCard = null }
+                                )
+                            }
+                        }
+                    }
+
 
                     "settings" -> Column {
                         Button(onClick = { route = "landing" }) { Text("Back") }

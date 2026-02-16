@@ -27,4 +27,13 @@ class ProfileRepository(
 
     suspend fun getDeck(username: String, deckName: String) =
         userCardDao.getDeck(username, deckName)
+
+    suspend fun removeUserCard(card: UserCardEntity) {
+        userCardDao.removeCard(
+            username = card.username,
+            cardId = card.cardId,
+            listType = card.listType,
+            deckName = card.deckName
+        )
+    }
 }

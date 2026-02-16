@@ -16,4 +16,10 @@ interface YgoApi {
         @Query("num") num: Int = 20,
         @Query("offset") offset: Int = 0
     ): CardInfoResponse
+
+    @GET("cardinfo.php")
+    suspend fun getCardById(
+        @Query("id") id: Int
+    ): CardInfoResponse
 }
+

@@ -33,4 +33,21 @@ interface UserCardDao {
 
     @Query("DELETE FROM user_cards WHERE username = :username AND cardId = :cardId AND listType = :listType")
     suspend fun removeCard(username: String, cardId: Long, listType: String)
+
+    @Query("""
+        DELETE FROM user_cards
+        WHERE username = :username
+          AND cardId = :cardId
+          AND listType = :listType
+          AND (
+                (:deckName IS NULL AND deckName IS NULL)
+             OR (deckName = :deckName)
+          )
+    """)
+    suspend fun removeCard(
+        username: String,
+        cardId: Long,
+        listType: String,
+        deckName: String?
+    )
 }
