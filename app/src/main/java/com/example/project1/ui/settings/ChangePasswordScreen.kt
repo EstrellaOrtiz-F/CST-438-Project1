@@ -1,13 +1,16 @@
 package com.example.project1.ui.settings
 
 import android.app.Activity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -46,6 +49,7 @@ fun ChangePasswordScreen() {
     // Creates SignUpViewModel and passes userDao through it.
     val viewModel = remember { SignUpViewModel(userDao) }
 
+    var username by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
     var currentPassword by remember { mutableStateOf("") }
 
@@ -57,24 +61,6 @@ fun ChangePasswordScreen() {
             .padding(top = 100.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        //Back Button
-        Text(
-            text = "Back",
-            color = Color.Black,
-            fontSize = 25.sp,
-            fontWeight = FontWeight.Bold,
-            //TODO: add back button functionality, closes activity goes back to SettingsScreen
-            modifier = Modifier
-                .align(Alignment.Start)
-                .padding(horizontal = 25.dp)
-                .clickable {},
-
-            )
-
-        // Space between back Button and Title
-        Spacer(modifier = Modifier.height(40.dp))
-
         // Title
         Text(
             text = "Change Password",
@@ -87,49 +73,95 @@ fun ChangePasswordScreen() {
         // Space between title and current password
         Spacer(modifier = Modifier.height(80.dp))
 
-        // Username
-        OutlinedTextField(
-            value = currentPassword,
-            onValueChange = { currentPassword = it },
-            placeholder = {
-                Text("Current Password", color = Color.Black)
-            },
-            textStyle = TextStyle(
-                color = Color.Black,
-                fontSize = 25.sp,
-            ),
-            modifier = Modifier
-                .width(300.dp)
-                .height(80.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = Color.Black,
-                focusedBorderColor = Color.Black
-            )
-        )
+        /* Start of box */
 
-        //space between current password and new password
-        Spacer(modifier = Modifier.height(40.dp))
-
-        // Password
-        OutlinedTextField(
-            value = newPassword,
-            onValueChange = { newPassword = it },
-            placeholder = {
-                Text("New Password", color = Color.Black)
-            },
-            visualTransformation = PasswordVisualTransformation(),
-            textStyle = TextStyle(
-                color = Color.Black,
-                fontSize = 25.sp
-            ),
+        Box(
             modifier = Modifier
-                .width(300.dp)
-                .height(80.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = Color.Black,
-                focusedBorderColor = Color.Black
-            )
-        )
+                .width(370.dp)
+                .height(370.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.10f),
+                    shape = RoundedCornerShape(20.dp)
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 25.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Username
+                OutlinedTextField(
+                    value = username,
+                    onValueChange = { username = it },
+                    placeholder = {
+                        Text("Username", color = Color.Black)
+                    },
+                    textStyle = TextStyle(
+                        color = Color.Black,
+                        fontSize = 25.sp,
+                    ),
+                    modifier = Modifier
+                        .width(300.dp)
+                        .height(80.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = Color.Black,
+                        focusedBorderColor = Color.Black
+                    )
+                )
+
+                //space between username and password
+                Spacer(modifier = Modifier.height(40.dp))
+
+                // new Username
+                OutlinedTextField(
+                    value = currentPassword,
+                    onValueChange = { currentPassword = it },
+                    placeholder = {
+                        Text("New Username", color = Color.Black)
+                    },
+                    textStyle = TextStyle(
+                        color = Color.Black,
+                        fontSize = 25.sp
+                    ),
+                    modifier = Modifier
+                        .width(300.dp)
+                        .height(80.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = Color.Black,
+                        focusedBorderColor = Color.Black
+                    )
+                )
+
+
+                //space between username and password
+                Spacer(modifier = Modifier.height(40.dp))
+
+                // new Username
+                OutlinedTextField(
+                    value = newPassword,
+                    onValueChange = { newPassword = it },
+                    placeholder = {
+                        Text("Password", color = Color.Black)
+                    },
+                    visualTransformation = PasswordVisualTransformation(),
+                    textStyle = TextStyle(
+                        color = Color.Black,
+                        fontSize = 25.sp
+                    ),
+                    modifier = Modifier
+                        .width(300.dp)
+                        .height(80.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = Color.Black,
+                        focusedBorderColor = Color.Black
+                    )
+                )
+            }
+        }
+
+        /*  End of Box */
 
         //space between password and button
         Spacer(modifier = Modifier.height(80.dp))

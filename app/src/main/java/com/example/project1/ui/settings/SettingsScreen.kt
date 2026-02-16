@@ -1,5 +1,6 @@
 package com.example.project1.ui.settings
 
+import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.project1.MainActivity
 import com.example.project1.SignUpViewModel
 import com.example.project1.database.AppDatabase
 
@@ -122,9 +124,12 @@ fun SettingsScreen() {
         Spacer(modifier = Modifier.height(80.dp))
 
         Button(
-            // When button is pressed, onClick will call the SignUpViewModel
-            // to validate the credentials (SignUpViewModel yet to be implemented).
-            onClick = { viewModel.create(username, password) },
+            // Logs user out to MainActivity
+            onClick = {
+                val intent = Intent(context, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                context.startActivity(intent)
+            },
             modifier = Modifier
                 .width(300.dp)
                 .height(80.dp),
@@ -138,6 +143,5 @@ fun SettingsScreen() {
             )
         }
 
-        //TODO: Add BackButton that goes back to landing page
     }
 }

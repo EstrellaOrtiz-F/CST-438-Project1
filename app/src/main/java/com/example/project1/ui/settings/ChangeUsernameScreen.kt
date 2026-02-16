@@ -1,13 +1,17 @@
 package com.example.project1.ui.settings
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -41,35 +45,19 @@ fun ChangeUsernameScreen() {
         .userDao()
 
     // Creates SignUpViewModel and passes userDao through it.
-    val viewModel = remember { SignUpViewModel(userDao) }
+    val viewModel = remember { ChangeUserViewModel(userDao) }
 
-    var password by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
-
-    val uiState by viewModel.uiState.collectAsState()
+    var newUsername by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
 
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 100.dp),
+            .padding(top = 50.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        // Back text Button
-        Text(
-            text = "Back",
-            color = Color.Black,
-            fontSize = 25.sp,
-            fontWeight = FontWeight.Bold,
-            //TODO: add back button functionality, closes activity goes back to SettingsScreen
-            modifier = Modifier
-                .align(Alignment.Start)
-                .padding(horizontal = 25.dp),
-        )
-
-        // Space between create account and username
-        Spacer(modifier = Modifier.height(40.dp))
 
         // Title
         Text(
@@ -81,68 +69,113 @@ fun ChangeUsernameScreen() {
         )
 
         // Space between create account and username
-        Spacer(modifier = Modifier.height(80.dp))
+        Spacer(modifier = Modifier.height(25.dp))
+        HorizontalDivider(thickness = 2.dp, color = Color.LightGray)
+        Spacer(modifier = Modifier.height(25.dp))
 
-        // Username
-        OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
-            placeholder = {
-                Text("Username", color = Color.Black)
-            },
-            textStyle = TextStyle(
-                color = Color.Black,
-                fontSize = 25.sp,
-            ),
+        /* Start of box */
+
+        Box(
             modifier = Modifier
-                .width(300.dp)
-                .height(80.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = Color.Black,
-                focusedBorderColor = Color.Black
-            )
-        )
+                .width(370.dp)
+                .height(370.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.10f),
+                    shape = RoundedCornerShape(20.dp)
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 25.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Username
+                OutlinedTextField(
+                    value = username,
+                    onValueChange = { username = it },
+                    placeholder = {
+                        Text("Username", color = Color.Black)
+                    },
+                    textStyle = TextStyle(
+                        color = Color.Black,
+                        fontSize = 25.sp,
+                    ),
+                    modifier = Modifier
+                        .width(300.dp)
+                        .height(80.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = Color.Black,
+                        focusedBorderColor = Color.Black
+                    )
+                )
+
+                //space between username and password
+                Spacer(modifier = Modifier.height(40.dp))
+
+                // new Username
+                OutlinedTextField(
+                    value = newUsername,
+                    onValueChange = { newUsername = it },
+                    placeholder = {
+                        Text("New Username", color = Color.Black)
+                    },
+                    textStyle = TextStyle(
+                        color = Color.Black,
+                        fontSize = 25.sp
+                    ),
+                    modifier = Modifier
+                        .width(300.dp)
+                        .height(80.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = Color.Black,
+                        focusedBorderColor = Color.Black
+                    )
+                )
 
 
-        //space between username and password
-        Spacer(modifier = Modifier.height(40.dp))
+                //space between username and password
+                Spacer(modifier = Modifier.height(40.dp))
 
-        // new Username
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            placeholder = {
-                Text("New Username", color = Color.Black)
-            },
-            visualTransformation = PasswordVisualTransformation(),
-            textStyle = TextStyle(
-                color = Color.Black,
-                fontSize = 25.sp
-            ),
-            modifier = Modifier
-                .width(300.dp)
-                .height(80.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = Color.Black,
-                focusedBorderColor = Color.Black
-            )
-        )
+                // new Username
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    placeholder = {
+                        Text("Password", color = Color.Black)
+                    },
+                    visualTransformation = PasswordVisualTransformation(),
+                    textStyle = TextStyle(
+                        color = Color.Black,
+                        fontSize = 25.sp
+                    ),
+                    modifier = Modifier
+                        .width(300.dp)
+                        .height(80.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = Color.Black,
+                        focusedBorderColor = Color.Black
+                    )
+                )
+            }
+        }
+
+        /*  End of Box */
 
         //space between password and button
-        Spacer(modifier = Modifier.height(80.dp))
+        Spacer(modifier = Modifier.height(60.dp))
 
         // Button
         Button(
-            // TODO: When button is pressed, onClick will call the changeUsernameViewModel
-            // NOT IMPLEMENTED YET
-            onClick = { viewModel.create(username, password) },
+            onClick = { viewModel.changeUsername(username, newUsername, password) },
             modifier = Modifier
                 .width(300.dp)
                 .height(80.dp),
             colors = ButtonDefaults.buttonColors(),
         ) {
             Text(
-                text = "Change Username",
+                text = "Change",
                 color = Color.White,
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold
@@ -150,16 +183,5 @@ fun ChangeUsernameScreen() {
         }
 
         Spacer(modifier = Modifier.height(35.dp))
-
-        // Might not use this, depends on ViewModel implementation
-        if (uiState.message.isNotEmpty()) {
-            Text(
-                text = uiState.message,
-                style = TextStyle(fontSize = 14.sp),
-                color = MaterialTheme.colorScheme.error,
-
-                )
-        }
-
     }
 }
