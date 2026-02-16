@@ -6,9 +6,9 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 /**
 @author Estrella Ortiz-Felix
-UserCardDao
+ UserCardDao
 
- */
+*/
 @Dao
 interface UserCardDao {
 

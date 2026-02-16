@@ -1,20 +1,30 @@
 package com.example.project1.repository
 
-import com.example.project1.database.UserCardDao
-import com.example.project1.database.UserCardEntity
-import com.example.project1.database.UserDAO
-import com.example.project1.database.UserEntity
+import com.example.project1.database.*
 
-class ProfileRepository (
-    private val userDao: UserDAO, private val userCardDao: UserCardDao
+/**
+ * Author:Estrella Ortiz
+ * Repository for the user profile
+ */
+class ProfileRepository(
+    private val userDao: UserDAO,
+    private val userCardDao: UserCardDao
 ) {
-    //loads the users account info
+
+    //gets the user,the cards
     suspend fun getUser(username: String) =
         userDao.getUserByUsername(username)
 
-    //lods users saved card collection
-    suspend fun getUserCards(username: String): List<UserCardEntity> {
-        return userCardDao.getCardsForUser(username)
+    suspend fun getUserCards(username: String) =
+        userCardDao.getCollection(username)
 
-    }
+    //gets wishlist
+    suspend fun getWishlist(username: String) =
+        userCardDao.getWishlist(username)
+
+    suspend fun getDeckNames(username: String) =
+        userCardDao.getDeckNames(username)
+
+    suspend fun getDeck(username: String, deckName: String) =
+        userCardDao.getDeck(username, deckName)
 }

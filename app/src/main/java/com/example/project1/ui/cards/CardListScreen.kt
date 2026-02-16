@@ -2,9 +2,11 @@ package com.example.project1.ui.cards
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.*
 import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -14,7 +16,9 @@ import com.example.project1.network.CardDto
 @Composable
 fun CardListScreen(
     vm: CardViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
-    onCardClick: (CardDto) -> Unit = {}
+    onCardClick: (CardDto) -> Unit = {},
+    onAddToWishlist: (CardDto) -> Unit = {},
+    onAddToDeck: (CardDto) -> Unit = {}
 ) {
     LaunchedEffect(Unit) { vm.loadFirstPage() }
 
@@ -30,33 +34,27 @@ fun CardListScreen(
                     .clickable { onCardClick(card) }
             ) {
                 Row(Modifier.padding(12.dp)) {
-                    val img = card.cardImages?.firstOrNull()?.imageUrl
                     AsyncImage(
-                        model = img,
+                        model = card.cardImages?.firstOrNull()?.imageUrl,
                         contentDescription = card.name,
                         modifier = Modifier.size(64.dp)
                     )
+
                     Spacer(Modifier.width(12.dp))
+
                     Column(Modifier.weight(1f)) {
-                        Text(card.name, style = MaterialTheme.typography.titleMedium)
+                        Text(card.name)
+                    }
 
-                        val price = card.cardPrices?.firstOrNull()?.tcgplayerPrice
-                            ?: card.cardPrices?.firstOrNull()?.cardmarketPrice
-                            ?: "N/A"
-
-                        Text("Market price: $price")
+                    Column {
+                        IconButton(onClick = { onAddToWishlist(card) }) {
+                            Icon(Icons.Default.FavoriteBorder, null)
+                        }
+                        IconButton(onClick = { onAddToDeck(card) }) {
+                            Icon(Icons.Default.Add, null)
+                        }
                     }
                 }
-            }
-        }
-
-        item {
-            Button(
-                onClick = { vm.loadMore() },
-                enabled = !vm.isLoading,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(if (vm.isLoading) "Loading..." else "Load more")
             }
         }
     }

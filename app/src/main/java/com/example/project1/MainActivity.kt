@@ -5,21 +5,35 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.project1.database.AppDatabase
+import com.example.project1.database.UserCardEntity
+import com.example.project1.ui.cards.CardListScreen
+import com.example.project1.ui.landing.LandingScreen
 import com.example.project1.ui.login.LoginScreen
 import com.example.project1.ui.login.LoginState
 import com.example.project1.ui.login.LoginViewModel
-
+import com.example.project1.ui.profile.ProfileScreen
+import com.example.project1.ui.profile.ProfileVMProvider
+import com.example.project1.ui.profile.ProfileViewModel
+import com.example.project1.ui.settings.SettingsScreen
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val userDao = AppDatabase.getDatabase(applicationContext).userDao()
+        val db = AppDatabase.getDatabase(applicationContext)
+        val userDao = db.userDao()
 
         val factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -34,25 +48,104 @@ class MainActivity : ComponentActivity() {
         val loginViewModel: LoginViewModel by viewModels { factory }
 
         setContent {
-            val state = loginViewModel.loginState
+            var currentUser by rememberSaveable { mutableStateOf<String?>(null) }
+            var route by rememberSaveable { mutableStateOf("landing") }
+            var pendingUsername by rememberSaveable { mutableStateOf("") }
 
-            LoginScreen { username, password ->
-                loginViewModel.login(username, password)
-            }
+            val state = loginViewModel.loginState
 
             LaunchedEffect(state) {
                 when (state) {
                     is LoginState.Success -> {
+                        currentUser = pendingUsername
+                        route = "landing"
                         Toast.makeText(this@MainActivity, "Login successful!", Toast.LENGTH_SHORT).show()
                         loginViewModel.reset()
-
-                        // TODO: Navigate to your next screen here (card list)
                     }
                     is LoginState.Error -> {
                         Toast.makeText(this@MainActivity, state.message, Toast.LENGTH_SHORT).show()
                         loginViewModel.reset()
                     }
                     else -> Unit
+                }
+            }
+
+            if (currentUser == null) {
+                LoginScreen { username, password ->
+                    pendingUsername = username
+                    loginViewModel.login(username, password)
+                }
+            } else {
+                val profileVm: ProfileViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+                    factory = ProfileVMProvider(currentUser!!, db)
+                )
+              //displays the landing page
+                when (route) {
+                    "landing" -> LandingScreen(
+                        username = currentUser!!,
+                        onOpenProfile = { route = "profile" },
+                        onOpenCards = { route = "cards" },
+                        onOpenSettings = { route = "settings" }
+                    )
+
+                    "cards" -> Column {
+                        Button(onClick = { route = "landing" }) { Text("Back") }
+
+                        CardListScreen(
+                            onCardClick = { },
+                            onAddToWishlist = { dto ->
+                                val entity = UserCardEntity(
+                                    username = currentUser!!,
+                                    cardId = dto.id ?: 0L,
+                                    cardName = dto.name,
+                                    imageUrl = dto.cardImages?.firstOrNull()?.imageUrl,
+                                    listType = "WISHLIST",
+                                    deckName = null
+                                )
+
+                                lifecycleScope.launch {
+                                    db.userCardDao().addCard(entity)
+                                    // refresh profile data
+                                    profileVm.refresh()
+                                    Toast.makeText(this@MainActivity, "Added to wishlist", Toast.LENGTH_SHORT).show()
+                                }
+                            },
+                            onAddToDeck = { dto ->
+                                // default deck name
+                                val entity = UserCardEntity(
+                                    username = currentUser!!,
+                                    cardId = dto.id ?: 0L,
+                                    cardName = dto.name,
+                                    imageUrl = dto.cardImages?.firstOrNull()?.imageUrl,
+                                    listType = "DECK",
+                                    deckName = "Main"
+                                )
+                                lifecycleScope.launch {
+                                    db.userCardDao().addCard(entity)
+                                    // make sure any changes made update
+                                    profileVm.refresh()
+                                    Toast.makeText(this@MainActivity, "Added to deck", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        )
+                    }
+                   //added this so that the landing page is seen after loging in
+                    "profile" -> {
+                        Column {
+                            Button(onClick = { route = "landing" }) { Text("Back") }
+                            // view model loads
+                            LaunchedEffect(Unit) { profileVm.load()
+                            }
+                            ProfileScreen(vm = profileVm)
+                        }
+                    }
+
+                    "settings" -> Column {
+                        Button(onClick = { route = "landing" }) { Text("Back") }
+                        SettingsScreen()
+                    }
+
+                    else -> route = "landing"
                 }
             }
         }
