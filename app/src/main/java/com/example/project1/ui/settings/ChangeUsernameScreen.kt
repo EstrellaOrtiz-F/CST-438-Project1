@@ -17,7 +17,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,7 +31,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.project1.SignUpViewModel
 import com.example.project1.database.AppDatabase
 
 @Composable
@@ -68,7 +66,7 @@ fun ChangeUsernameScreen() {
             textAlign = TextAlign.Center
         )
 
-        // Space between create account and username
+        // Space between create title and box
         Spacer(modifier = Modifier.height(25.dp))
         HorizontalDivider(thickness = 2.dp, color = Color.LightGray)
         Spacer(modifier = Modifier.height(25.dp))
@@ -111,7 +109,7 @@ fun ChangeUsernameScreen() {
                     )
                 )
 
-                //space between username and password
+                //space between username and new username
                 Spacer(modifier = Modifier.height(40.dp))
 
                 // new Username
@@ -135,10 +133,10 @@ fun ChangeUsernameScreen() {
                 )
 
 
-                //space between username and password
+                //space between new username and password
                 Spacer(modifier = Modifier.height(40.dp))
 
-                // new Username
+                // password
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
@@ -182,6 +180,5 @@ fun ChangeUsernameScreen() {
             )
         }
 
-        Spacer(modifier = Modifier.height(35.dp))
     }
 }

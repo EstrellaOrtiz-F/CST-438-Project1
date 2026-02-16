@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -47,20 +48,21 @@ fun ChangePasswordScreen() {
         .userDao()
 
     // Creates SignUpViewModel and passes userDao through it.
-    val viewModel = remember { SignUpViewModel(userDao) }
+    val viewModel = remember { ChangePassViewModel(userDao) }
 
     var username by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
     var currentPassword by remember { mutableStateOf("") }
 
-    val uiState by viewModel.uiState.collectAsState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 100.dp),
+            .padding(top = 50.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+
         // Title
         Text(
             text = "Change Password",
@@ -70,11 +72,12 @@ fun ChangePasswordScreen() {
             textAlign = TextAlign.Center
         )
 
-        // Space between title and current password
-        Spacer(modifier = Modifier.height(80.dp))
+        // Space between create title and box
+        Spacer(modifier = Modifier.height(25.dp))
+        HorizontalDivider(thickness = 2.dp, color = Color.LightGray)
+        Spacer(modifier = Modifier.height(25.dp))
 
         /* Start of box */
-
         Box(
             modifier = Modifier
                 .width(370.dp)
@@ -111,15 +114,15 @@ fun ChangePasswordScreen() {
                     )
                 )
 
-                //space between username and password
+                //space between current password and username
                 Spacer(modifier = Modifier.height(40.dp))
 
-                // new Username
+                // current password
                 OutlinedTextField(
                     value = currentPassword,
                     onValueChange = { currentPassword = it },
                     placeholder = {
-                        Text("New Username", color = Color.Black)
+                        Text("Current Password", color = Color.Black)
                     },
                     textStyle = TextStyle(
                         color = Color.Black,
@@ -135,15 +138,15 @@ fun ChangePasswordScreen() {
                 )
 
 
-                //space between username and password
+                //space between new password and password
                 Spacer(modifier = Modifier.height(40.dp))
 
-                // new Username
+                // new password
                 OutlinedTextField(
                     value = newPassword,
                     onValueChange = { newPassword = it },
                     placeholder = {
-                        Text("Password", color = Color.Black)
+                        Text("New Password", color = Color.Black)
                     },
                     visualTransformation = PasswordVisualTransformation(),
                     textStyle = TextStyle(
@@ -164,13 +167,11 @@ fun ChangePasswordScreen() {
         /*  End of Box */
 
         //space between password and button
-        Spacer(modifier = Modifier.height(80.dp))
+        Spacer(modifier = Modifier.height(60.dp))
 
         // Button
         Button(
-            // TODO: When button is pressed, onClick will call the changePasswordViewModel
-            // NOT IMPLEMENTED YET
-            onClick = { viewModel.create(currentPassword, newPassword) },
+            onClick = { viewModel.changePassword(username,currentPassword, newPassword) },
             modifier = Modifier
                 .width(300.dp)
                 .height(80.dp),
@@ -181,16 +182,6 @@ fun ChangePasswordScreen() {
                 color = Color.White,
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold
-            )
-        }
-
-        Spacer(modifier = Modifier.height(35.dp))
-
-        if (uiState.message.isNotEmpty()) {
-            Text(
-                text = uiState.message,
-                style = TextStyle(fontSize = 14.sp),
-                color = MaterialTheme.colorScheme.error,
             )
         }
     }
