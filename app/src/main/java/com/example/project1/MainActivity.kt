@@ -18,6 +18,7 @@ import com.example.project1.database.AppDatabase
 import com.example.project1.database.UserCardEntity
 import com.example.project1.ui.cards.CardListScreen
 import com.example.project1.ui.cards.CardDetailScreen
+import com.example.project1.ui.cards.UserCardDetailScreen
 import com.example.project1.network.CardDto
 import com.example.project1.ui.landing.LandingScreen
 import com.example.project1.ui.login.LoginScreen
@@ -156,14 +157,34 @@ class MainActivity : ComponentActivity() {
 
                     //added this so that the landing page is seen after logging in
                     "profile" -> {
+                        var selectedProfileCard by remember { mutableStateOf<UserCardEntity?>(null) }
+
                         Column {
-                            Button(onClick = { route = "landing" }) { Text("Back") }
-                            // view model loads
-                            LaunchedEffect(Unit) { profileVm.load()
+                            Button(
+                                onClick = {
+                                    if (selectedProfileCard != null) selectedProfileCard = null else route = "landing"
+                                }
+                            ) { Text("Back") }
+
+                            LaunchedEffect(Unit) { profileVm.load() }
+
+                            if (selectedProfileCard == null) {
+                                ProfileScreen(
+                                    vm = profileVm,
+                                    onCardClick = { clicked ->
+                                        selectedProfileCard = clicked
+                                    }
+                                )
+                            } else {
+                                // ✅ Reuses the SAME CardDetailScreen via API lookup by id
+                                UserCardDetailScreen(
+                                    savedCard = selectedProfileCard!!,
+                                    onBack = { selectedProfileCard = null }
+                                )
                             }
-                            ProfileScreen(vm = profileVm)
                         }
                     }
+
 
                     "settings" -> Column {
                         Button(onClick = { route = "landing" }) { Text("Back") }

@@ -55,7 +55,7 @@ private enum class ListTab { COLLECTION, WISHLIST }
 @Composable
 fun ProfileScreen(
     vm: ProfileViewModel,
-    onOpenWishlist: () -> Unit = {}
+    onCardClick: (UserCardEntity) -> Unit = {}
 ) {
     LaunchedEffect(Unit) { vm.load() }
 
@@ -229,7 +229,7 @@ fun ProfileScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     items(displayed) { card: UserCardEntity ->
-                        NiceCardItem(card)
+                        NiceCardItem(card, onClick = { onCardClick(card) })
                     }
                 }
             }
@@ -269,7 +269,7 @@ fun ProfileScreen(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             items(cards) { card: UserCardEntity ->
-                                NiceCardItem(card)
+                                NiceCardItem(card, onClick = { onCardClick(card) })
                             }
                         }
                     }
@@ -303,11 +303,17 @@ private fun StatChip(label: String, value: String) {
 }
 
 @Composable
-private fun NiceCardItem(card: UserCardEntity) {
+private fun NiceCardItem(
+    card: UserCardEntity,
+    onClick: () -> Unit
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(0.dp),
         shape = RoundedCornerShape(14.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        onClick = onClick // ✅ clickable card
     ) {
         Column {
             AsyncImage(
