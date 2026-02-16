@@ -96,7 +96,8 @@ class MainActivity : ComponentActivity() {
                             onAddToWishlist = { dto ->
                                 val entity = UserCardEntity(
                                     username = currentUser!!,
-                                    cardId = dto.id ?: 0L,
+                                    // Card IDs are always present in YGOProDeck responses.
+                                    cardId = dto.id,
                                     cardName = dto.name,
                                     imageUrl = dto.cardImages?.firstOrNull()?.imageUrl,
                                     listType = "WISHLIST",
@@ -114,7 +115,8 @@ class MainActivity : ComponentActivity() {
                                 // default deck name
                                 val entity = UserCardEntity(
                                     username = currentUser!!,
-                                    cardId = dto.id ?: 0L,
+                                    // Card IDs are always present in YGOProDeck responses.
+                                    cardId = dto.id,
                                     cardName = dto.name,
                                     imageUrl = dto.cardImages?.firstOrNull()?.imageUrl,
                                     listType = "DECK",
