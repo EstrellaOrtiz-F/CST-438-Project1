@@ -58,6 +58,17 @@ class ProfileViewModel(
         }
     }
 
+    /**
+     * Removes a card from the database, then refreshes the profile lists.
+     */
+    fun removeCard(card: UserCardEntity) {
+        viewModelScope.launch {
+            repo.removeUserCard(card)
+            refresh()
+        }
+    }
+
+
     // Added so Profile updates immediately after DB changes
     fun refresh() {
         didLoad = false

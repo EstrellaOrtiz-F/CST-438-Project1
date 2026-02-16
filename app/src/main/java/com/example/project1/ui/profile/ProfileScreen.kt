@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -24,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.Surface
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -55,8 +57,10 @@ private enum class ListTab { COLLECTION, WISHLIST }
 @Composable
 fun ProfileScreen(
     vm: ProfileViewModel,
-    onCardClick: (UserCardEntity) -> Unit = {}
-) {
+    onCardClick: (UserCardEntity) -> Unit = {},
+    onRemoveCard: (UserCardEntity) -> Unit = {}
+)
+ {
     LaunchedEffect(Unit) { vm.load() }
 
     // which tab is currently selected
@@ -229,7 +233,11 @@ fun ProfileScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     items(displayed) { card: UserCardEntity ->
-                        NiceCardItem(card, onClick = { onCardClick(card) })
+                        NiceCardItem(
+                            card = card,
+                            onClick = { onCardClick(card) },
+                            onRemove = { onRemoveCard(card) }
+                        )
                     }
                 }
             }
@@ -269,12 +277,14 @@ fun ProfileScreen(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             items(cards) { card: UserCardEntity ->
-                                NiceCardItem(card, onClick = { onCardClick(card) })
+                                NiceCardItem(
+                                    card = card,
+                                    onClick = { onCardClick(card) },
+                                    onRemove = { onRemoveCard(card) }
+                                )
                             }
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         }
@@ -305,15 +315,43 @@ private fun StatChip(label: String, value: String) {
 @Composable
 private fun NiceCardItem(
     card: UserCardEntity,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onRemove: () -> Unit
 ) {
+    var showConfirm by remember { mutableStateOf(false) }
+
+    // Confirmation dialog for deletion
+    if (showConfirm) {
+        AlertDialog(
+            onDismissRequest = { showConfirm = false },
+            title = { Text("Remove card?") },
+            text = {
+                val where = when (card.listType) {
+                    "WISHLIST" -> "wishlist"
+                    "DECK" -> "deck '''${card.deckName ?: "Main"}'''"
+                    else -> "collection"
+                }
+                Text("Remove '''${card.cardName}''' from your $where?")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showConfirm = false
+                        onRemove()
+                    }
+                ) { Text("Remove") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showConfirm = false }) { Text("Cancel") }
+            }
+        )
+    }
+
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(0.dp),
+        modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        onClick = onClick // ✅ clickable card
+        onClick = onClick
     ) {
         Column {
             AsyncImage(
@@ -335,14 +373,27 @@ private fun NiceCardItem(
                     textAlign = TextAlign.Start
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Tap to view",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Tap to view",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+
+                    // Remove button
+                    TextButton(
+                        onClick = { showConfirm = true }
+                    ) {
+                        Text("Remove")
+                    }
+                }
             }
         }
     }
 }
-

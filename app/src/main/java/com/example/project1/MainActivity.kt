@@ -173,6 +173,10 @@ class MainActivity : ComponentActivity() {
                                     vm = profileVm,
                                     onCardClick = { clicked ->
                                         selectedProfileCard = clicked
+                                    },
+                                    onRemoveCard = { cardToRemove ->
+                                        profileVm.removeCard(cardToRemove)
+                                        Toast.makeText(this@MainActivity, "Removed", Toast.LENGTH_SHORT).show()
                                     }
                                 )
                             } else {
