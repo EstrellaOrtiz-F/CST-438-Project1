@@ -11,15 +11,17 @@ import coil.compose.AsyncImage
 import com.example.project1.network.CardDto
 
 /**
- * Shows details for a single Yu-Gi-Oh card.
- * Should Display a larger image and key fields (name, type, description, prices, etc).
+ * Displays a larger card image plus important card info.
+ * This is shown when a user taps a card from CardListScreen.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardDetailScreen(
     card: CardDto,
     onBack: () -> Unit
 ) {
     val imgUrl = card.cardImages?.firstOrNull()?.imageUrl
+
     val price = card.cardPrices?.firstOrNull()?.tcgplayerPrice
         ?: card.cardPrices?.firstOrNull()?.cardmarketPrice
         ?: "N/A"
@@ -29,9 +31,7 @@ fun CardDetailScreen(
             TopAppBar(
                 title = { Text(card.name ?: "Card Details") },
                 navigationIcon = {
-                    TextButton(onClick = onBack) {
-                        Text("Back")
-                    }
+                    TextButton(onClick = onBack) { Text("Back") }
                 }
             )
         }
@@ -44,61 +44,36 @@ fun CardDetailScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Larger card image
+            // Large image
             AsyncImage(
                 model = imgUrl,
                 contentDescription = card.name,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(320.dp)
+                    .height(340.dp)
             )
 
-            // Core info
-            Text(
-                text = card.name ?: "Unknown Name",
-                style = MaterialTheme.typography.headlineSmall
-            )
+            Text(card.name ?: "Unknown Name", style = MaterialTheme.typography.headlineSmall)
+            Text("Type: ${card.type ?: "N/A"}", style = MaterialTheme.typography.bodyLarge)
+            Text("Market price: $price", style = MaterialTheme.typography.bodyLarge)
 
-            Text(
-                text = "Type: ${card.type ?: "N/A"}",
-                style = MaterialTheme.typography.bodyLarge
-            )
-
-            Text(
-                text = "Market price: $price",
-                style = MaterialTheme.typography.bodyLarge
-            )
-
-            // Stats (only show if present)
+            // Optional monster stats
             val atk = card.atk
             val def = card.def
             val level = card.level
-
             if (atk != null || def != null || level != null) {
                 val stats = buildString {
                     if (atk != null) append("ATK: $atk  ")
                     if (def != null) append("DEF: $def  ")
                     if (level != null) append("Level: $level")
                 }.trim()
-
-                if (stats.isNotBlank()) {
-                    Text(
-                        text = stats,
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
+                if (stats.isNotBlank()) Text(stats, style = MaterialTheme.typography.bodyLarge)
             }
 
-            // Description / effect text
+            // Description
             if (!card.desc.isNullOrBlank()) {
-                Text(
-                    text = "Effect / Description",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = card.desc!!,
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                Text("Effect / Description", style = MaterialTheme.typography.titleMedium)
+                Text(card.desc!!, style = MaterialTheme.typography.bodyMedium)
             }
         }
     }

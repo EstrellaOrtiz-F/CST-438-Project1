@@ -32,6 +32,9 @@ data class CardDto(
     val id: Long,
     val name: String,
     val desc: String?,
+    val atk: Int?,
+    val def: Int?,
+    val level: Int?,
 
     //  added these two for display / filtering
     // `type` is human-friendly (eg. "Normal Monster", "Spell Card")
