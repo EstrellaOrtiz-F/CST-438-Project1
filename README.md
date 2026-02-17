@@ -1,7 +1,7 @@
 # Project 01 Retrospective and Overview
 
-[Video Walkthrough]()  
-[Github Repo]()
+[Video Walkthrough](https://drive.google.com/file/d/10YvfrJso0ogIVMJDDOhZfoXfpxPMn4S6/view?resourcekey)  
+[Github Repo](https://github.com/EstrellaOrtiz-F/CST-438-Project1.git)
 
 ---
 
