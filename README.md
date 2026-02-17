@@ -171,4 +171,6 @@ Utilizing github  was one of the more valubale things I learned. I became more c
   -
 
 - Final assessment of the project
-  -
+  - Overall, the project was successful and achieved the goals we set. We were able to implement user login, connect to an API to retrieve card data, and use Room to store collections, wishlists, and decks. The main features worked as intended and the app functioned smoothly.
+
+We also became more comfortable using GitHub for version control. We worked with branches, commits, and pull requests to manage our code and collaborate as a team. Working heavily alongside github also definitely helped us learn how to work together effectively as a team. 
