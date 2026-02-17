@@ -77,6 +77,7 @@ Learning how to use Github and working with a team to create an app. It helped u
 + If you could do it over, what would you change?
 + If I could do it over again I'd want to spend more time on the actual look of the app. The app as it is has a simple white and purple theme to it but I think it would've been nicer to make it a darker theme so that the cards popped out more.
 + What is the most valuable thing you learned?
++ The most valuable thing I learned was how to navigate Github, I'm a very forgetful person so this was areally nice way of committing it to memory
 + What was the biggest challenge?  
 + I think the biggest challenge for me was bug fixing, I spent way too many hours trying to fix things that were as simple as missing a package declaration 
 + Why was it a challenge?  
@@ -165,10 +166,10 @@ Utilizing github  was one of the more valubale things I learned. I became more c
 ## Conclusion
 
 - How successful was the project?
-  -
+  - The project is in a state we are all fairly comfortable with
 
 - What was the largest victory?
-  -
+  - Getting the card details to appear after only a few attempts
 
 - Final assessment of the project
   -
