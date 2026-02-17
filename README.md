@@ -36,26 +36,25 @@ We got styling help for this document from this [guide](https://ygoprodeck.com/a
 
 #### What was your role / which stories did you work on
 
-+ I worked on allowing the user to create an account and storing their credentials as long as they are valid, I also created the settings page allowing the user to change their username & password, this page also allows the user to sign out.
++ I worked on allowing the user to create an account and storing their credentials as long as they are valid, I also created the settings page allowing the user to change their username & password, this page also allows the user to sign out. 
 
-+ What was the biggest challenge?
++ What was the biggest challenge?  
   My biggest challenge was trying to learn kotlin, I kept running into issues and was unsure what was causing them and once I eventually figured it out I had already wasted plenty of time.
 
-  
-+ Why was it a challenge?
-+ How was the challenge addressed?
-  Using Kotlin was a challenge for me because I had never used it before, I was so used to Java that I had a hard time transitioning into Kotlin since the way pages were created where completely different. I addressed this challenge by researching how to build an app in Kotlin and also looking at how my teammates were working.
+
++ Why was it a challenge?  
+  + How was the challenge addressed?  
+Using Kotlin was a challenge for me because I had never used it before, I was so used to Java that I had a hard time transitioning into Kotlin since the way pages were created where completely different. I addressed this challenge by researching how to build an app in Kotlin and also looking at how my teammates were working.
+
++ Favorite / most interesting part of this project  
+My favorite part of this assignment was implementing the creating the sign up, since I was still new to Kotlin it took me a bit but I enjoyed the process of learning.
 
 
-+ Favorite / most interesting part of this project
-  My favorite part of this assignment was implementing the creating the sign up, since I was still new to Kotlin it took me a bit but I enjoyed the process of learning.
++ If you could do it over, what would you change?  
+If I could do this again I would make sure to implement more features to the settings portion of the application. Due to me learning still I wasn't able to implement every thing I wish I could have.
 
-  
-+ If you could do it over, what would you change?
-  If I could do this again I would make sure to implement more features to the settings portion of the application. Due to me learning still I wasn't able to implement every thing I wish I could have.
-
-+ What is the most valuable thing you learned?
-  Learning how to use Github and working with a team to create an app. It helped us stay organized by allowing us to assign each-other issues and made sure we reviewed each-others code before merging to the main branch.
++ What is the most valuable thing you learned?  
+Learning how to use Github and working with a team to create an app. It helped us stay organized by allowing us to assign each-other issues and made sure we reviewed each-others code before merging to the main branch.
 
 ---
 
