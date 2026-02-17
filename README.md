@@ -77,6 +77,16 @@ Learning how to use Github and working with a team to create an app. It helped u
 + If you could do it over, what would you change?
 + If I could do it over again I'd want to spend more time on the actual look of the app. The app as it is has a simple white and purple theme to it but I think it would've been nicer to make it a darker theme so that the cards popped out more.
 + What is the most valuable thing you learned?
++ What was the biggest challenge?  
++ I think the biggest challenge for me was bug fixing, I spent way too many hours trying to fix things that were as simple as missing a package declaration 
++ Why was it a challenge?  
+  + How was the challenge addressed?  
++ The reason it was so challenging was that many files were often very large so looking over something small like a package declaration or an incorrectly spelled call was easy and would often have me focusing on the logic of something completely unrelated, essentially just eating up my time. The challenge was addressed by hammering away at it until it wasn't a problem anymore I suppose. The debug process went something like: Run the app, look at any errors that may or may not have appeared in the terminal, fix those errors, repeat until the app did what I wanted it to.
++ Favorite / most interesting part of this project  
++ My favorite part was actually working on the CardListScreen and other API related files. The YGOAPI is built specifically ot be used for app development so a lot of the calls and functions were pretty easy to implement and I can't even begin to tell you how happy I was seeing all of the cards load first try. They weren't formatted correctly but the images were there.
++ If you could do it over, what would you change?  
++ If I could do it over again I'd want to spend more time on the actual look of the app. The app as it is has a simple white and purple theme to it but I think it would've been nicer to make it a darker theme so that the cards popped out more. 
++ What is the most valuable thing you learned?  
 + I think my teammates will agree that learning how to use github was incredibly valuable. It forced us to stay organized and keep track of each other's work to make sure our app was as fine-tuned as we could make it with the time we had.
 
 ---
