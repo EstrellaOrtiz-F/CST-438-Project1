@@ -1,56 +1,27 @@
 package com.example.project1.ui.profile
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.Surface
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.project1.database.UserCardEntity
-
-/**
- * @author Estrella Ortiz
- * Project:1
- * Abstract: Displays the users information like username
- * The user can also view their wishlist and card collection from their profile
- */
+import kotlin.math.ceil
 
 private enum class ListTab { COLLECTION, WISHLIST }
 
@@ -59,12 +30,14 @@ fun ProfileScreen(
     vm: ProfileViewModel,
     onCardClick: (UserCardEntity) -> Unit = {},
     onRemoveCard: (UserCardEntity) -> Unit = {}
-)
- {
+) {
     LaunchedEffect(Unit) { vm.load() }
 
-    // which tab is currently selected
     var selectedTab by remember { mutableStateOf(ListTab.COLLECTION) }
+
+    // Deck creation dialog state
+    var showCreateDeck by remember { mutableStateOf(false) }
+    var newDeckName by remember { mutableStateOf("") }
 
     val bg = Brush.verticalGradient(
         colors = listOf(
@@ -93,200 +66,276 @@ fun ProfileScreen(
             return
         }
 
-        Column(
+        LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Header
-            Text(
-                text = "Profile",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold
-            )
+            item {
+                Text(
+                    text = "Profile",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            }
 
-            // Profile card with avatar and stats
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(14.dp)
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
-                        Surface(
-                            modifier = Modifier
-                                .size(64.dp)
-                                .clip(RoundedCornerShape(20.dp)),
-                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(14.dp)
                         ) {
-                            Box(contentAlignment = Alignment.Center) {
+                            Surface(
+                                modifier = Modifier
+                                    .size(64.dp)
+                                    .clip(RoundedCornerShape(20.dp)),
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text(
+                                        text = vm.user?.username?.firstOrNull()?.uppercase() ?: "U",
+                                        fontSize = 28.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+
+                            Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = vm.user?.username?.firstOrNull()?.uppercase() ?: "U",
-                                    fontSize = 28.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
+                                    text = vm.user?.username ?: "",
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = "Welcome back!",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                                 )
                             }
                         }
 
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = vm.user?.username ?: "",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "Welcome back!",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                            )
-                        }
-                    }
-
-                    // Stats row
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        StatChip(label = "Cards", value = vm.collection.size.toString())
-                        StatChip(label = "Wishlist", value = vm.wishlist.size.toString())
-                    }
-
-                    // Buttons row: toggles for Collection/Wishlist
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        // Collection button - filled when selected
-                        val collectionColors = if (selectedTab == ListTab.COLLECTION) {
-                            ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                        } else {
-                            ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface)
-                        }
-
-                        Button(
-                            onClick = { selectedTab = ListTab.COLLECTION },
-                            modifier = Modifier.weight(1f),
-                            colors = collectionColors
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            Text(
-                                text = "Collection",
-                                color = if (selectedTab == ListTab.COLLECTION) Color.White else MaterialTheme.colorScheme.onSurface
-                            )
+                            StatChip(label = "Cards", value = vm.collection.size.toString())
+                            StatChip(label = "Wishlist", value = vm.wishlist.size.toString())
                         }
 
-                        // Wishlist button - outlined/outlined look when not selected, filled when selected
-                        val wishlistSelected = selectedTab == ListTab.WISHLIST
-                        val wishlistColors = if (wishlistSelected) {
-                            ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
-                        } else {
-                            ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-                        }
-
-                        OutlinedButton(
-                            onClick = { selectedTab = ListTab.WISHLIST },
-                            modifier = Modifier.weight(1f),
-                            colors = wishlistColors,
-                            shape = RoundedCornerShape(50)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            Text(
-                                text = "Wishlist",
-                                color = if (wishlistSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                            )
+                            val collectionSelected = selectedTab == ListTab.COLLECTION
+                            Button(
+                                onClick = { selectedTab = ListTab.COLLECTION },
+                                modifier = Modifier.weight(1f),
+                                colors = if (collectionSelected)
+                                    ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                                else
+                                    ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface)
+                            ) {
+                                Text(
+                                    text = "Collection",
+                                    color = if (collectionSelected) Color.White else MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+
+                            val wishlistSelected = selectedTab == ListTab.WISHLIST
+                            OutlinedButton(
+                                onClick = { selectedTab = ListTab.WISHLIST },
+                                modifier = Modifier.weight(1f),
+                                colors = if (wishlistSelected)
+                                    ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
+                                else
+                                    ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                                shape = RoundedCornerShape(50)
+                            ) {
+                                Text(
+                                    text = "Wishlist",
+                                    color = if (wishlistSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                )
+                            }
                         }
                     }
                 }
             }
 
-            // Title above grid reflects selected tab
-            Text(
-                text = when (selectedTab) {
-                    ListTab.COLLECTION -> "Card Collection"
-                    ListTab.WISHLIST -> "Wishlist"
-                },
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-
-            // Data source for the grid depends on selected tab
-            val displayed = when (selectedTab) {
-                ListTab.COLLECTION -> vm.collection
-                ListTab.WISHLIST -> vm.wishlist
+            item {
+                Text(
+                    text = when (selectedTab) {
+                        ListTab.COLLECTION -> "Card Collection"
+                        ListTab.WISHLIST -> "Wishlist"
+                    },
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
             }
 
-            if (displayed.isEmpty()) {
-                Text(
-                    text = if (selectedTab == ListTab.COLLECTION) "No cards saved yet." else "No wishlist items.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f)
-                )
-            } else {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    items(displayed) { card: UserCardEntity ->
-                        NiceCardItem(
-                            card = card,
-                            onClick = { onCardClick(card) },
-                            onRemove = { onRemoveCard(card) }
-                        )
-                    }
+            item {
+                val displayed = when (selectedTab) {
+                    ListTab.COLLECTION -> vm.collection
+                    ListTab.WISHLIST -> vm.wishlist
                 }
-            }
 
-
-            Text(
-                text = "Decks",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-
-            if (vm.decks.isEmpty()) {
-                Text(
-                    text = "No decks created.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f)
-                )
-            } else {
-                vm.decks.forEach { (deckName, cards) ->
+                if (displayed.isEmpty()) {
                     Text(
-                        text = deckName,
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold
+                        text = if (selectedTab == ListTab.COLLECTION) "No cards saved yet." else "No wishlist items.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f)
+                    )
+                } else {
+                    val gridHeight = gridHeightForItems(
+                        itemCount = displayed.size,
+                        columns = 2,
+                        itemHeight = 230.dp,
+                        spacing = 12.dp
                     )
 
-                    if (cards.isEmpty()) {
-                        Text(
-                            text = "No cards in this deck.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f)
-                        )
-                    } else {
-                        LazyVerticalGrid(
-                            columns = GridCells.Fixed(2),
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            items(cards) { card: UserCardEntity ->
-                                NiceCardItem(
-                                    card = card,
-                                    onClick = { onCardClick(card) },
-                                    onRemove = { onRemoveCard(card) }
-                                )
-                            }
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(gridHeight),
+                        userScrollEnabled = false
+                    ) {
+                        items(displayed) { card ->
+                            NiceCardItem(
+                                card = card,
+                                onClick = { onCardClick(card) },
+                                onRemove = { onRemoveCard(card) }
+                            )
                         }
                     }
                 }
             }
+
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Decks",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Button(onClick = { showCreateDeck = true }) {
+                        Text("Create Deck")
+                    }
+                }
+            }
+
+            // ✅ THIS is what you were missing:
+            item {
+                if (showCreateDeck) {
+                    AlertDialog(
+                        onDismissRequest = { showCreateDeck = false },
+                        title = { Text("Create new deck") },
+                        text = {
+                            Column {
+                                Text("Enter a deck name:")
+                                Spacer(modifier = Modifier.height(8.dp))
+                                OutlinedTextField(
+                                    value = newDeckName,
+                                    onValueChange = { newDeckName = it },
+                                    label = { Text("Deck name") },
+                                    singleLine = true,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    val trimmed = newDeckName.trim()
+                                    if (trimmed.isNotEmpty()) {
+                                        vm.createDeck(trimmed)
+                                        newDeckName = ""
+                                        showCreateDeck = false
+                                    }
+                                }
+                            ) { Text("Create") }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showCreateDeck = false }) { Text("Cancel") }
+                        }
+                    )
+                }
+            }
+
+            // ✅ Render decks + their cards
+            if (vm.decks.isEmpty()) {
+                item {
+                    Text(
+                        text = "No decks created.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f)
+                    )
+                }
+            } else {
+                vm.decks.forEach { (deckName, cards) ->
+                    item {
+                        Text(
+                            text = deckName,
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    if (cards.isEmpty()) {
+                        item {
+                            Text(
+                                text = "No cards in this deck.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f)
+                            )
+                        }
+                    } else {
+                        item {
+                            val deckHeight = gridHeightForItems(
+                                itemCount = cards.size,
+                                columns = 2,
+                                itemHeight = 230.dp,
+                                spacing = 12.dp
+                            )
+
+                            LazyVerticalGrid(
+                                columns = GridCells.Fixed(2),
+                                verticalArrangement = Arrangement.spacedBy(12.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(deckHeight),
+                                userScrollEnabled = false
+                            ) {
+                                items(cards) { card ->
+                                    NiceCardItem(
+                                        card = card,
+                                        onClick = { onCardClick(card) },
+                                        onRemove = { onRemoveCard(card) }
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    item { Spacer(modifier = Modifier.height(8.dp)) }
+                }
+            }
+
+            item { Spacer(modifier = Modifier.height(24.dp)) }
         }
     }
 }
@@ -320,7 +369,6 @@ private fun NiceCardItem(
 ) {
     var showConfirm by remember { mutableStateOf(false) }
 
-    // Confirmation dialog for deletion
     if (showConfirm) {
         AlertDialog(
             onDismissRequest = { showConfirm = false },
@@ -328,10 +376,10 @@ private fun NiceCardItem(
             text = {
                 val where = when (card.listType) {
                     "WISHLIST" -> "wishlist"
-                    "DECK" -> "deck '''${card.deckName ?: "Main"}'''"
+                    "DECK" -> "deck \"${card.deckName ?: "Main"}\""
                     else -> "collection"
                 }
-                Text("Remove '''${card.cardName}''' from your $where?")
+                Text("Remove \"${card.cardName}\" from your $where?")
             },
             confirmButton = {
                 TextButton(
@@ -349,7 +397,7 @@ private fun NiceCardItem(
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         onClick = onClick
     ) {
@@ -363,37 +411,34 @@ private fun NiceCardItem(
                     .background(Color.LightGray.copy(alpha = 0.2f))
             )
 
-            Column(modifier = Modifier.padding(10.dp)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
                     text = card.cardName,
-                    maxLines = 2,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Start
+                    modifier = Modifier.weight(1f)
                 )
 
-                Spacer(modifier = Modifier.height(6.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Tap to view",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    )
-
-                    // Remove button
-                    TextButton(
-                        onClick = { showConfirm = true }
-                    ) {
-                        Text("Remove")
-                    }
+                TextButton(onClick = { showConfirm = true }) {
+                    Text("Remove")
                 }
             }
         }
     }
+}
+private fun gridHeightForItems(
+    itemCount: Int,
+    columns: Int,
+    itemHeight: Dp,
+    spacing: Dp
+): Dp {
+    if (itemCount <= 0) return 0.dp
+    val rows = ceil(itemCount / columns.toFloat()).toInt().coerceAtLeast(1)
+    return (itemHeight * rows.toFloat()) + (spacing * (rows - 1).toFloat())
 }

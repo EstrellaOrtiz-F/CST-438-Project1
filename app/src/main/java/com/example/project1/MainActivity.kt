@@ -13,6 +13,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.project1.database.AppDatabase
 import com.example.project1.database.UserCardEntity
@@ -94,6 +102,9 @@ class MainActivity : ComponentActivity() {
                     "cards" -> {
                         // Holds the selected card. If null, we're on the list screen.
                         var selectedCard by remember { mutableStateOf<CardDto?>(null) }
+                        var showDeckPicker by remember { mutableStateOf(false) }
+                        var pendingDeckCard by remember { mutableStateOf<CardDto?>(null) }
+                        var newDeckInput by remember { mutableStateOf("") }
 
                         Column {
                             // Back button behavior:
@@ -129,22 +140,131 @@ class MainActivity : ComponentActivity() {
                                         }
                                     },
                                     onAddToDeck = { dto ->
-                                        val entity = UserCardEntity(
-                                            username = currentUser!!,
-                                            cardId = dto.id,
-                                            cardName = dto.name,
-                                            imageUrl = dto.cardImages?.firstOrNull()?.imageUrl,
-                                            listType = "DECK",
-                                            deckName = "Main"
-                                        )
-
-                                        lifecycleScope.launch {
-                                            db.userCardDao().addCard(entity)
-                                            profileVm.refresh()
-                                            Toast.makeText(this@MainActivity, "Added to deck", Toast.LENGTH_SHORT).show()
-                                        }
+                                        pendingDeckCard = dto
+                                        showDeckPicker = true
                                     }
+
                                 )
+                                if (showDeckPicker && pendingDeckCard != null) {
+                                    val deckNames = profileVm.decks.keys.toList().sorted()
+
+                                    androidx.compose.material3.AlertDialog(
+                                        onDismissRequest = {
+                                            showDeckPicker = false
+                                            pendingDeckCard = null
+                                            newDeckInput = ""
+                                        },
+                                        title = { Text("Add to Deck") },
+                                        text = {
+                                            Column {
+                                                Text("Choose an existing deck:")
+                                                Spacer(modifier = Modifier.height(8.dp))
+
+                                                if (deckNames.isEmpty()) {
+                                                    Text("No decks yet. Create one below.")
+                                                } else {
+                                                    deckNames.forEach { deckName ->
+                                                        TextButton(
+                                                            onClick = {
+                                                                val dto = pendingDeckCard!!
+                                                                val entity = UserCardEntity(
+                                                                    username = currentUser!!,
+                                                                    cardId = dto.id,
+                                                                    cardName = dto.name,
+                                                                    imageUrl = dto.cardImages?.firstOrNull()?.imageUrl,
+                                                                    listType = "DECK",
+                                                                    deckName = deckName
+                                                                )
+
+                                                                lifecycleScope.launch {
+                                                                    db.userCardDao().addCard(entity)
+                                                                    profileVm.refresh()
+                                                                    Toast.makeText(
+                                                                        this@MainActivity,
+                                                                        "Added to $deckName",
+                                                                        Toast.LENGTH_SHORT
+                                                                    ).show()
+                                                                }
+
+                                                                showDeckPicker = false
+                                                                pendingDeckCard = null
+                                                                newDeckInput = ""
+                                                            }
+                                                        ) {
+                                                            Text(deckName)
+                                                        }
+                                                    }
+                                                }
+
+                                                Spacer(modifier = Modifier.height(12.dp))
+                                                Text("Or create a new deck:")
+                                                Spacer(modifier = Modifier.height(8.dp))
+
+                                                androidx.compose.material3.OutlinedTextField(
+                                                    value = newDeckInput,
+                                                    onValueChange = { newDeckInput = it },
+                                                    label = { Text("New deck name") },
+                                                    singleLine = true,
+                                                    modifier = Modifier.fillMaxWidth()
+                                                )
+                                            }
+                                        },
+                                        confirmButton = {
+                                            TextButton(
+                                                onClick = {
+                                                    val dto = pendingDeckCard!!
+                                                    val deckName = newDeckInput.trim()
+
+                                                    if (deckName.isEmpty()) return@TextButton
+
+                                                    lifecycleScope.launch {
+                                                        // Create the deck explicitly (DeckEntity table)
+                                                        db.deckDao().insert(
+                                                            com.example.project1.database.DeckEntity(
+                                                                username = currentUser!!,
+                                                                name = deckName
+                                                            )
+                                                        )
+
+                                                        // Add card into that deck
+                                                        db.userCardDao().addCard(
+                                                            UserCardEntity(
+                                                                username = currentUser!!,
+                                                                cardId = dto.id,
+                                                                cardName = dto.name,
+                                                                imageUrl = dto.cardImages?.firstOrNull()?.imageUrl,
+                                                                listType = "DECK",
+                                                                deckName = deckName
+                                                            )
+                                                        )
+
+                                                        profileVm.refresh()
+
+                                                        Toast.makeText(
+                                                            this@MainActivity,
+                                                            "Created '$deckName' and added card",
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                    }
+
+                                                    showDeckPicker = false
+                                                    pendingDeckCard = null
+                                                    newDeckInput = ""
+                                                }
+                                            ) { Text("Create & Add") }
+                                        },
+                                        dismissButton = {
+                                            TextButton(
+                                                onClick = {
+                                                    showDeckPicker = false
+                                                    pendingDeckCard = null
+                                                    newDeckInput = ""
+                                                }
+                                            ) { Text("Cancel") }
+                                        }
+                                    )
+                                }
+
                             } else {
                                 // Show details
                                 CardDetailScreen(
