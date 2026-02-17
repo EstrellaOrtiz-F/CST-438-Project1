@@ -68,6 +68,27 @@ class ProfileViewModel(
         }
     }
 
+    /**
+     * Creates a new deck in the database.
+     */
+    fun createDeck(name: String) {
+        viewModelScope.launch {
+            repo.createDeck(username, name)
+            refresh()
+        }
+    }
+
+    /**
+     * Deletes a deck from the database.
+     */
+    fun deleteDeck(name: String) {
+        viewModelScope.launch {
+            repo.deleteDeck(username, name)
+            refresh()
+        }
+    }
+
+
 
     // Added so Profile updates immediately after DB changes
     fun refresh() {

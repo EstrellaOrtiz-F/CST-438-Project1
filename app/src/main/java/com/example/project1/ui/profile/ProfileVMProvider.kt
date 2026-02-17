@@ -12,7 +12,7 @@ class ProfileVMProvider(
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass == ProfileViewModel::class.java) {
-            val repo = ProfileRepository(db.userDao(), db.userCardDao())
+            val repo = ProfileRepository(db.userDao(), db.userCardDao(), db.deckDao())
             @Suppress("UNCHECKED_CAST")
             return ProfileViewModel(username, repo) as T
         }

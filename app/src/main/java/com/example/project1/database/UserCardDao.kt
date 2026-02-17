@@ -50,4 +50,10 @@ interface UserCardDao {
         listType: String,
         deckName: String?
     )
+
+    @Query("SELECT DISTINCT deckName FROM user_cards WHERE username = :username AND deckName IS NOT NULL")
+    suspend fun getDeckNamesFromCards(username: String): List<String>
+
+    @Query("DELETE FROM user_cards WHERE username = :username AND deckName = :deckName")
+    suspend fun removeCardsInDeck(username: String, deckName: String)
 }

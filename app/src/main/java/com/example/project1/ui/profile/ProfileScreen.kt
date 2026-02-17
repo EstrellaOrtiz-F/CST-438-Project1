@@ -66,7 +66,12 @@ fun ProfileScreen(
     // which tab is currently selected
     var selectedTab by remember { mutableStateOf(ListTab.COLLECTION) }
 
-    val bg = Brush.verticalGradient(
+     // --- Deck creation dialog state ---
+     var showCreateDeck by remember { mutableStateOf(false) }
+     var newDeckName by remember { mutableStateOf("") }
+
+
+     val bg = Brush.verticalGradient(
         colors = listOf(
             MaterialTheme.colorScheme.primary.copy(alpha = 0.10f),
             MaterialTheme.colorScheme.background
@@ -243,11 +248,56 @@ fun ProfileScreen(
             }
 
 
-            Text(
-                text = "Decks",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Decks",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Button(onClick = { showCreateDeck = true }) {
+                    Text("Create Deck")
+                }
+            }
+
+            if (showCreateDeck) {
+                AlertDialog(
+                    onDismissRequest = { showCreateDeck = false },
+                    title = { Text("Create new deck") },
+                    text = {
+                        Column {
+                            Text("Enter a deck name:")
+                            Spacer(modifier = Modifier.height(8.dp))
+                            androidx.compose.material3.OutlinedTextField(
+                                value = newDeckName,
+                                onValueChange = { newDeckName = it },
+                                label = { Text("Deck name") },
+                                singleLine = true
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                val trimmed = newDeckName.trim()
+                                if (trimmed.isNotEmpty()) {
+                                    vm.createDeck(trimmed) // <-- requires your step 7 createDeck() in ProfileViewModel
+                                    newDeckName = ""
+                                    showCreateDeck = false
+                                }
+                            }
+                        ) { Text("Create") }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showCreateDeck = false }) { Text("Cancel") }
+                    }
+                )
+            }
+
 
             if (vm.decks.isEmpty()) {
                 Text(
@@ -328,10 +378,10 @@ private fun NiceCardItem(
             text = {
                 val where = when (card.listType) {
                     "WISHLIST" -> "wishlist"
-                    "DECK" -> "deck '''${card.deckName ?: "Main"}'''"
+                    "DECK" -> "deck \"${card.deckName ?: "Main"}\""
                     else -> "collection"
                 }
-                Text("Remove '''${card.cardName}''' from your $where?")
+                Text("Remove \"${card.cardName}\" from your $where?")
             },
             confirmButton = {
                 TextButton(

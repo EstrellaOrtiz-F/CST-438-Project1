@@ -11,8 +11,8 @@ import androidx.room.RoomDatabase
  * Stores users and their saved card collection.
  */
 @Database(
-    entities = [UserEntity::class, UserCardEntity::class],
-    version = 2
+    entities = [UserEntity::class, UserCardEntity::class, DeckEntity::class],
+    version = 3
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -21,6 +21,9 @@ abstract class AppDatabase : RoomDatabase() {
 
     // DAO for user collection
     abstract fun userCardDao(): UserCardDao
+
+    // Dao for decks
+    abstract fun deckDao(): DeckDao
 
     companion object {
         private var INSTANCE: AppDatabase? = null
