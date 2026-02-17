@@ -14,7 +14,8 @@ interface DeckDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(deck: DeckEntity)
 
-    @Query("DELETE FROM decks WHERE username = :username AND name = :name")
-    suspend fun deleteDeck(username: String, name: String)
+    @Query("DELETE FROM decks WHERE username = :username AND name = :deckName")
+    suspend fun deleteDeck(username: String, deckName: String)
 }
+
 

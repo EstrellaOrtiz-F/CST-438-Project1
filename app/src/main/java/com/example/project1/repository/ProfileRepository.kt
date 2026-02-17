@@ -35,20 +35,20 @@ class ProfileRepository(
         )
     }
 
+    // Deck names come from decks table + any existing card rows that have a deckName
     suspend fun getDeckNames(username: String): List<String> {
-        // combine decks table + any deck names from user_card entries to be robust
         val explicit = deckDao.getDeckNames(username)
-        val implicit = userCardDao.getDeckNamesFromCards(username) // add this DAO function if you don't have it
-        return (explicit + implicit).distinct()
+        val implicit = userCardDao.getDeckNamesFromCards(username)
+        return (explicit + implicit).map { it.trim() }.filter { it.isNotEmpty() }.distinct().sorted()
     }
 
     suspend fun createDeck(username: String, deckName: String) {
-        deckDao.insert(DeckEntity(username = username, name = deckName))
+        deckDao.insert(DeckEntity(username = username, name = deckName.trim()))
     }
 
     suspend fun deleteDeck(username: String, deckName: String) {
-        // remove deck record then remove any card associations (optional)
+        // First remove cards in the deck, then delete deck row
+        userCardDao.removeCardsInDeck(username, deckName)
         deckDao.deleteDeck(username, deckName)
-        userCardDao.removeCardsInDeck(username, deckName) // optional: add this DAO query if you want deleting a deck to remove its cards
     }
 }
